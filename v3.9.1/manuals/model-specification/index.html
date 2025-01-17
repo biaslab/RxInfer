@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Model specification · RxInfer.jl</title><meta name="title" content="Model specification · RxInfer.jl"/><meta property="og:title" content="Model specification · RxInfer.jl"/><meta property="twitter:title" content="Model specification · RxInfer.jl"/><meta name="description" content="Julia package for automated Bayesian inference on a factor graph with reactive message passing"/><meta property="og:description" content="Julia package for automated Bayesian inference on a factor graph with reactive message passing"/><meta property="twitter:description" content="Julia package for automated Bayesian inference on a factor graph with reactive message passing"/><meta property="og:url" content="https://reactivebayes.github.io/RxInfer.jl/manuals/model-specification/"/><meta property="twitter:url" content="https://reactivebayes.github.io/RxInfer.jl/manuals/model-specification/"/><link rel="canonical" href="https://reactivebayes.github.io/RxInfer.jl/manuals/model-specification/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/theme.css" rel="stylesheet" type="text/css"/><link href="../../assets/header.css" rel="stylesheet" type="text/css"/><script src="../../assets/header.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img class="docs-light-only" src="../../assets/logo.svg" alt="RxInfer.jl logo"/><img class="docs-dark-only" src="../../assets/logo-dark.svg" alt="RxInfer.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../../">RxInfer.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">User guide</span><ul><li><a class="tocitem" href="../getting-started/">Getting started</a></li><li><a class="tocitem" href="../comparison/">RxInfer.jl vs. Others</a></li><li class="is-active"><a class="tocitem" href>Model specification</a><ul class="internal"><li><a class="tocitem" href="#@model-macro"><span><code>@model</code> macro</span></a></li><li><a class="tocitem" href="#A-state-space-model-example"><span>A state space model example</span></a></li><li><a class="tocitem" href="#user-guide-model-specification-node-creation"><span>Relationships between variables</span></a></li><li><a class="tocitem" href="#user-guide-model-specification-visualization"><span>Model structure visualisation</span></a></li><li><a class="tocitem" href="#Node-Contraction"><span>Node Contraction</span></a></li><li><a class="tocitem" href="#Read-also"><span>Read also</span></a></li></ul></li><li><a class="tocitem" href="../constraints-specification/">Constraints specification</a></li><li><a class="tocitem" href="../meta-specification/">Meta specification</a></li><li><input class="collapse-toggle" id="menuitem-2-6" type="checkbox"/><label class="tocitem" for="menuitem-2-6"><span class="docs-label">Inference specification</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../inference/overview/">Overview</a></li><li><a class="tocitem" href="../inference/static/">Static inference</a></li><li><a class="tocitem" href="../inference/streamlined/">Streamline inference</a></li><li><a class="tocitem" href="../inference/initialization/">Initialization</a></li><li><a class="tocitem" href="../inference/autoupdates/">Auto-updates</a></li><li><a class="tocitem" href="../inference/delta-node/">Deterministic nodes</a></li><li><a class="tocitem" href="../inference/nonconjugate/">Non-conjugate inference</a></li><li><a class="tocitem" href="../inference/undefinedrules/">Undefined message update rules</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-2-7" type="checkbox"/><label class="tocitem" for="menuitem-2-7"><span class="docs-label">Inference customization</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../customization/custom-node/">Defining a custom node and rules</a></li><li><a class="tocitem" href="../customization/postprocess/">Inference results postprocessing</a></li></ul></li><li><a class="tocitem" href="../debugging/">Debugging</a></li><li><a class="tocitem" href="../migration-guide-v2-v3/">Migration from v2 to v3</a></li><li><input class="collapse-toggle" id="menuitem-2-10" type="checkbox"/><label class="tocitem" for="menuitem-2-10"><span class="docs-label">Sharp bits of RxInfer</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../sharpbits/overview/">Overview</a></li><li><a class="tocitem" href="../sharpbits/rule-not-found/">Rule Not Found Error</a></li><li><a class="tocitem" href="../sharpbits/stack-overflow-inference/">Stack Overflow in Message Computations</a></li><li><a class="tocitem" href="../sharpbits/usage-colon-equality/">Using <code>=</code> instead of <code>:=</code> for deterministic nodes</a></li></ul></li></ul></li><li><span class="tocitem">Library</span><ul><li><a class="tocitem" href="../../library/model-construction/">Model construction</a></li><li><a class="tocitem" href="../../library/bethe-free-energy/">Bethe Free Energy</a></li><li><a class="tocitem" href="../../library/functional-forms/">Functional form constraints</a></li><li><a class="tocitem" href="../../library/exported-methods/">Exported methods</a></li></ul></li><li><a class="tocitem" href="../../examples/overview/">Examples</a></li><li><span class="tocitem">Contributing</span><ul><li><a class="tocitem" href="../../contributing/guide/">Contribution guide</a></li><li><a class="tocitem" href="../../contributing/guidelines/">Contribution guidelines</a></li><li><a class="tocitem" href="../../contributing/new-documentation/">Contributing to the documentation</a></li><li><a class="tocitem" href="../../contributing/new-example/">Contributing to the examples</a></li><li><a class="tocitem" href="../../contributing/new-release/">Publishing a new release</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">User guide</a></li><li class="is-active"><a href>Model specification</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Model specification</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/ReactiveBayes/RxInfer.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/ReactiveBayes/RxInfer.jl/blob/main/docs/src/manuals/model-specification.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="user-guide-model-specification"><a class="docs-heading-anchor" href="#user-guide-model-specification">Model Specification</a><a id="user-guide-model-specification-1"></a><a class="docs-heading-anchor-permalink" href="#user-guide-model-specification" title="Permalink"></a></h1><p><code>RxInfer</code> largely depends on <code>GraphPPL</code> for model specification. Read extensive documentation regarding the model specification in the corresponding section of <a href="https://reactivebayes.github.io/GraphPPL.jl/stable/"><code>GraphPPL</code> documentation</a>. Here we outline only a small portion of model specification capabilities for beginners.</p><h2 id="@model-macro"><a class="docs-heading-anchor" href="#@model-macro"><code>@model</code> macro</a><a id="@model-macro-1"></a><a class="docs-heading-anchor-permalink" href="#@model-macro" title="Permalink"></a></h2><p>The <code>RxInfer.jl</code> package exports the <code>@model</code> macro for model specification. This <code>@model</code> macro accepts the model specification itself in a form of regular Julia function. </p><p>For example: </p><pre><code class="language-julia hljs">@model function model_name(model_arguments...)
+    # model specification here
+end</code></pre><p>where <code>model_arguments...</code> may include both hypeparameters and data. </p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p><code>model_arguments</code> are converted to keyword arguments. Positional arguments in the model specification are not supported.  Thus it is not possible to use Julia&#39;s multiple dispatch for the model arguments.</p></div></div><p>The <code>@model</code> macro returns a regular Julia function (in this example <code>model_name()</code>) which can be executed as usual. The only difference here is that all arguments of the model function are treated as keyword arguments. Upon calling, the model function returns a so-called model generator object, e.g:</p><pre><code class="language-julia hljs">@model function my_model(observation, hyperparameter)
+    observations ~ Normal(mean = 0.0, var = hyperparameter)
+end</code></pre><pre><code class="language-julia hljs">model = my_model(hyperparameter = 3)</code></pre><p>The model generator is not a real model (yet). For example, in the code above, we haven&#39;t specified anything for the <code>observation</code>.  The generator object allows us to iteratively add extra properties to the model, condition on data, and/or assign extra metadata information without actually materializing the entire graph structure. Read extra information about model generator <a href="../../library/model-construction/#lib-model-construction">here</a>.</p><h2 id="A-state-space-model-example"><a class="docs-heading-anchor" href="#A-state-space-model-example">A state space model example</a><a id="A-state-space-model-example-1"></a><a class="docs-heading-anchor-permalink" href="#A-state-space-model-example" title="Permalink"></a></h2><p>Here we give an example of a probabilistic model before presenting the details of the model specification syntax. The model below is a simple state space model with latent random variables <code>x</code> and noisy observations <code>y</code>.</p><pre><code class="language-julia hljs">@model function state_space_model(y, trend, variance)
+    x[1] ~ Normal(mean = 0.0, variance = 100.0)
+    y[1] ~ Normal(mean = x[1], variance = variance)
+    for i in 2:length(y)
+       x[i] ~ Normal(mean = x[i - 1] + trend, variance = 1.0)
+       y[i] ~ Normal(mean = x[i], variance = variance)
+    end
+end</code></pre><p>In this model we assign a prior distribution over latent state <code>x[1]</code>. All subsequent states <code>x[i]</code> depend on <code>x[i - 1]</code> and <code>trend</code> and are modelled  as a simple <a href="https://en.wikipedia.org/wiki/Random_walk#:~:text=Gaussian%20random%20walk,-A%20random%20walk&amp;text=If%20%CE%BC%20is%20nonzero%2C%20the,will%20be%20vs%20%2B%20n%CE%BC.">Gaussian random walk</a>. Observations <code>y</code> are modelled with the <code>Gaussian</code> distribution as well with a  prespecified <code>variance</code> hyperparameter.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p><code>length(y)</code> can be called only if <code>y</code> has an associated data with it. This is not always the case, for example it is possible to instantiate the  model lazily before the data becomes available. In such situations, <code>length(y)</code> will throw an error.</p></div></div><h3 id="user-guide-model-specification-hyperparameters"><a class="docs-heading-anchor" href="#user-guide-model-specification-hyperparameters">Hyperparameters</a><a id="user-guide-model-specification-hyperparameters-1"></a><a class="docs-heading-anchor-permalink" href="#user-guide-model-specification-hyperparameters" title="Permalink"></a></h3><p>Any constant passed to a model as a model argument will be automatically converted to a corresponding constant node in the model&#39;s graph.</p><pre><code class="language-julia hljs">model = state_space_model(trend = 3.0, variance = 1.0)</code></pre><p>In this example we instantiate a model generator with <code>trend</code> and <code>variance</code> parameters <em>clamped</em> to <code>3.0</code> and <code>1.0</code> respectively. That means  that no inference will be performed for those parameters and some of the expressions within the model structure might be simplified and compiled-out.</p><h3 id="user-guide-model-specification-conditioning"><a class="docs-heading-anchor" href="#user-guide-model-specification-conditioning">Conditioning on data</a><a id="user-guide-model-specification-conditioning-1"></a><a class="docs-heading-anchor-permalink" href="#user-guide-model-specification-conditioning" title="Permalink"></a></h3><p>To fully complete model specification we need to specify <code>y</code>. In this example, <code>y</code> is playing a role of observations. <code>RxInfer</code> provides a convenient mechanism to pass data values to the model with the <code>|</code> operator.</p><pre><code class="language-julia hljs">conditioned = model | (y = [ 0.0, 1.0, 2.0 ], )</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">state_space_model(trend = 3.0, variance = 1.0) conditioned on: 
+  y = [0.0, 1.0, 2.0]
+</code></pre><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>The conditioning on data is a feature of <code>RxInfer</code>, not <code>GraphPPL</code>.</p></div></div><p>In the example above we conditioned on data in a form of the <code>NamedTuple</code>, but it is also possible to  condition on a dictionary where keys represent names of the corresponding model arguments:</p><pre><code class="language-julia hljs">data        = Dict(:y =&gt; [ 0.0, 1.0, 2.0 ])
+conditioned = model | data</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">state_space_model(trend = 3.0, variance = 1.0) conditioned on: 
+  y = [0.0, 1.0, 2.0]
+</code></pre><p>Sometimes it might be useful to indicate that some arguments are data (thus condition on them) before the actual data becomes available. This situation may occur during <a href="../inference/streamlined/#manual-online-inference">reactive inference</a>, when data becomes available <em>after</em> model creation. <code>RxInfer</code> provides a special structure called <a href="../../library/model-construction/#RxInfer.DeferredDataHandler"><code>RxInfer.DeferredDataHandler</code></a>, which can be used instead of the real data.</p><p>For the example above, however, we cannot simply do the following:</p><pre><code class="language-julia hljs">model | (y = RxInfer.DeferredDataHandler(), )</code></pre><p>because we use <code>length(y)</code> in the model and this is only possible if <code>y</code> has an associated data.  We could adjust the model specification a bit, by adding the extra <code>n</code> parameter to the list of arguments:</p><pre><code class="language-julia hljs">@model function state_space_model_with_n(y, n, trend, variance)
+    x[1] ~ Normal(mean = 0.0, variance = 100.0)
+    y[1] ~ Normal(mean = x[1], variance = variance)
+    for i in 2:n
+       x[i] ~ Normal(mean = x[i - 1] + trend, variance = 1.0)
+       y[i] ~ Normal(mean = x[i], variance = variance)
+    end
+end</code></pre><p>For such model, we can safely condition on <code>y</code> without providing actual data for it, but using the <a href="../../library/model-construction/#RxInfer.DeferredDataHandler"><code>RxInfer.DeferredDataHandler</code></a> instead:</p><pre><code class="language-julia hljs">state_space_model_with_n(trend = 3.0, variance = 1.0, n = 10) | (
+    y = RxInfer.DeferredDataHandler(),
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">state_space_model_with_n(trend = 3.0, variance = 1.0, n = 10) conditioned on: 
+  y = [ deffered data ]
+</code></pre><p>Read more information about condition on data in <a href="../../library/model-construction/#lib-model-construction-conditioning">this section</a> of the documentation.</p><h3 id="user-guide-model-specification-random-variables"><a class="docs-heading-anchor" href="#user-guide-model-specification-random-variables">Latent variables</a><a id="user-guide-model-specification-random-variables-1"></a><a class="docs-heading-anchor-permalink" href="#user-guide-model-specification-random-variables" title="Permalink"></a></h3><p>Latent variables are being created with the <code>~</code> operator and can be read as <em>is distributed as</em>.  For example, to create a latent variable <code>y</code> which is modeled by a <a href="https://en.wikipedia.org/wiki/Normal_distribution">Normal</a> distribution,  where its mean and variance are controlled by the random variables <code>m</code> and <code>v</code> respectively, we define</p><pre><code class="language-julia hljs">y ~ Normal(mean = m, variance = v)</code></pre><p>In the example above</p><pre><code class="language-julia hljs">x[1] ~ Normal(mean = 0.0, variance = 100.0)</code></pre><p>indicates that <code>x₁</code> is distributed as <a href="https://en.wikipedia.org/wiki/Normal_distribution">Normal</a> distribution. </p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>The <code>RxInfer.jl</code> package uses the <code>~</code> operator for modelling both stochastic and deterministic relationships between random variables. However, <code>GraphPPL.jl</code> also allows to use <code>:=</code> operator for deterministic relationships.</p></div></div><h2 id="user-guide-model-specification-node-creation"><a class="docs-heading-anchor" href="#user-guide-model-specification-node-creation">Relationships between variables</a><a id="user-guide-model-specification-node-creation-1"></a><a class="docs-heading-anchor-permalink" href="#user-guide-model-specification-node-creation" title="Permalink"></a></h2><p>In probabilistic models based on graphs, factor nodes are used to define a relationship between random variables and/or constants and data variables. A factor node defines a probability distribution over selected latent or data variables. The <code>~</code> operator not only creates a latent variable but also  defines a functional relatinship of it with other variables and creates a factor node as a result.</p><p>In the example above</p><pre><code class="language-julia hljs">x[1] ~ Normal(mean = 0.0, variance = 100.0)</code></pre><p>not only creates a latent variable <code>x₁</code> but also a factor node <code>Normal</code>.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>Generally it is not necessary to label all the arguments with their names, as <code>mean = ...</code> or <code>variance = ...</code> and many factor nodes  do not require it explicitly. However, for nodes, which have many different useful parametrizations (e.g. <code>Normal</code>) labeling the arguments  is a requirement that helps to avoid any possible confusion. Read more about <code>Distributions</code> compatibility <a href="#user-guide-model-specification-distributions">here</a>.</p></div></div><h3 id="user-guide-model-specification-node-creation-deterministic"><a class="docs-heading-anchor" href="#user-guide-model-specification-node-creation-deterministic">Deterministic relationships</a><a id="user-guide-model-specification-node-creation-deterministic-1"></a><a class="docs-heading-anchor-permalink" href="#user-guide-model-specification-node-creation-deterministic" title="Permalink"></a></h3><p>In contrast to other probabilistic programming languages in Julia, <code>RxInfer</code> does not allow use of <code>=</code> operator for creating deterministic relationships between (latent)variables.  Instead, we can use <code>:=</code> operator for this purpose. For example:</p><pre><code class="language-julia hljs">t ~ Normal(mean = 0.0, variance = 1.0)
+x := exp(t) # x is linked deterministically to t
+y ~ Normal(mean = x, variance = 1.0)</code></pre><p>Using <code>x = exp(t)</code> directly would be incorrect and most likely would result in an <code>MethodError</code> because <code>t</code> does not have a definitive value at the model creation time  (remember that our models create a factor graph under the hood and latent states do not have a value until the inference is performed).</p><p>See <a href="../sharpbits/usage-colon-equality/#usage-colon-equality">Using <code>=</code> instead of <code>:=</code> for deterministic nodes</a> for a detailed explanation of this design choice.</p><h3 id="user-guide-model-specification-node-creation-control-flow"><a class="docs-heading-anchor" href="#user-guide-model-specification-node-creation-control-flow">Control flow statements</a><a id="user-guide-model-specification-node-creation-control-flow-1"></a><a class="docs-heading-anchor-permalink" href="#user-guide-model-specification-node-creation-control-flow" title="Permalink"></a></h3><p>In general, it is possible to use any Julia code within model specification function, including control flow statements, such as <code>for</code>, <code>while</code> and <code>if</code> statements. However, it is not possible to use any latent states within such statements. This is due to the fact that it is necessary to know exactly the structure of the graph before the inference. Thus it is <strong>not possible</strong> to write statements like:</p><pre><code class="language-julia hljs">c ~ Categorical([ 1/2, 1/2 ])
+# This is NOT possible in `RxInfer`&#39;s model specification language
+if c &gt; 1
+# ...
+end</code></pre><p>since <code>c</code> must be statically known upon graph creation.</p><h3 id="user-guide-model-specification-node-creation-anonymous"><a class="docs-heading-anchor" href="#user-guide-model-specification-node-creation-anonymous">Anonymous factor nodes and latent variables</a><a id="user-guide-model-specification-node-creation-anonymous-1"></a><a class="docs-heading-anchor-permalink" href="#user-guide-model-specification-node-creation-anonymous" title="Permalink"></a></h3><p>The <code>@model</code> macro automatically resolves any inner function calls into anonymous factor nodes and latent variables.  For example the following:</p><pre><code class="language-julia hljs">y ~ Normal(
+    mean = Normal(mean = 0.0, variance = 1.0), 
+    precision = Gamma(shape = 1.0, rate = 1.0)
+)</code></pre><p>is equivalent to</p><pre><code class="language-julia hljs">tmp1 ~ Normal(mean = 0.0, variance = 1.0)
+tmp2 ~ Gamma(shape = 1.0, rate = 1.0)
+y    ~ Normal(mean = tmp1, precision = tmp2)</code></pre><p>The inference backend still performs inference for anonymous latent variables, however, there it does not provide an easy way to obtain posteriors for them. Note that the inference backend will try to optimize deterministic function calls in the case where all arguments are known in advance. For example:</p><pre><code class="language-julia hljs">y ~ Normal(mean = 0.0, variance = inv(2.0))</code></pre><p>should not create an extra factor node for the <code>inv</code>, since <code>inv</code> is a deterministic function and all arguments are known in advance. The same situation applies in case of complex initializations involving different types, as in:</p><pre><code class="language-julia hljs">y ~ MvNormal(mean = zeros(3), covariance = Matrix(Diagonal(ones(3))))</code></pre><p>In this case, the expression <code>Matrix(Diagonal(ones(3)))</code> can (and will) be precomputed upon model creation and does not require to perform probabilistic inference.</p><h3 id="user-guide-model-specification-node-creation-indexing"><a class="docs-heading-anchor" href="#user-guide-model-specification-node-creation-indexing">Indexing operations</a><a id="user-guide-model-specification-node-creation-indexing-1"></a><a class="docs-heading-anchor-permalink" href="#user-guide-model-specification-node-creation-indexing" title="Permalink"></a></h3><p>The <code>ref</code> expressions, such as <code>x[i]</code>, are handled in a special way. Technically, in Julia, the <code>x[i]</code> call is translated to a function call <code>getindex(x, i)</code>. Thus the <code>@model</code> macro should create a factor node for the <code>getindex</code> function, but this won&#39;t happen in practice because this case is treated separately. This means that the model parser will not create unnecessary nodes when only simple indexing is involved. That also means that all expressions inside <code>x[...]</code> list are left untouched during model parsing. </p><div class="admonition is-warning"><header class="admonition-header">Warning</header><div class="admonition-body"><p>It is not allowed to use latent variables within square brackets in the model specification or for control flow statements such as <code>if</code>, <code>for</code> or <code>while</code>.</p></div></div><h3 id="user-guide-model-specification-node-creation-broadcasting"><a class="docs-heading-anchor" href="#user-guide-model-specification-node-creation-broadcasting">Broadcasting syntax</a><a id="user-guide-model-specification-node-creation-broadcasting-1"></a><a class="docs-heading-anchor-permalink" href="#user-guide-model-specification-node-creation-broadcasting" title="Permalink"></a></h3><p><code>GraphPPL</code> support broadcasting for <code>~</code> operator in the exact same way as Julia itself.  A user is free to write an expression of the following form:</p><pre><code class="language-julia hljs">m  ~ Normal(mean = 0.0, precision = 0.0001)
+t  ~ Gamma(shape = 1.0, rate = 1.0)
+y .~ Normal(mean = m, precision = t)</code></pre><p>More complex expressions are also allowed:</p><pre><code class="language-julia hljs">w         ~ Wishart(3, diageye(2))
+x[1]      ~ MvNormal(mean = zeros(2), precision = diageye(2))
+x[2:end] .~ A .* x[1:end-1] # &lt;- State-space model with transition matrix A
+y        .~ MvNormal(mean = x, precision = w) # &lt;- Observations with unknown precision matrix</code></pre><p>Note, however, that shapes of all variables that take part in the broadcasting operation must be defined in advance. That means that it is not possible to  use broadcasting with <a href="#user-guide-model-specification-conditioning">deffered data</a>. Read more about how broadcasting machinery works in Julia in <a href="https://docs.julialang.org/en/v1/manual/arrays/#Broadcasting">the official documentation</a>.</p><h3 id="user-guide-model-specification-distributions"><a class="docs-heading-anchor" href="#user-guide-model-specification-distributions"><code>Distributions.jl</code> compatibility</a><a id="user-guide-model-specification-distributions-1"></a><a class="docs-heading-anchor-permalink" href="#user-guide-model-specification-distributions" title="Permalink"></a></h3><p>For some factor nodes we rely on the syntax from <code>Distributions.jl</code> to make it easy to adopt <code>RxInfer.jl</code> for these users. These nodes include for example the <a href="https://en.wikipedia.org/wiki/Beta_distribution"><code>Beta</code></a> and <a href="https://en.wikipedia.org/wiki/Wishart_distribution"><code>Wishart</code></a> distributions. These nodes can be created using the <code>~</code> syntax with the arguments as specified in <code>Distributions.jl</code>. Unfortunately, we <code>RxInfer.jl</code> is not yet compatible with all possible distributions to be used as factor nodes. If you feel that you would like to see another node implemented, please file an issue.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>To quickly check the list of all available factor nodes that can be used in the model specification language call <code>?ReactiveMP.is_predefined_node</code> or <code>Base.doc(ReactiveMP.is_predefined_node)</code>.</p></div></div><p>Specifically for the Gaussian/Normal case we have custom implementations that yield a higher computational efficiency and improved stability in comparison to <code>Distributions.jl</code> as these are optimized for sampling operations. Our aliases for these distributions therefore do not correspond to the implementations from <code>Distributions.jl</code>. However, our model specification language is compatible with syntax from <code>Distributions.jl</code> for normal distributions, which will be automatically converted. <code>RxInfer</code> has its own implementation because of the following 3 reasons:</p><ol><li><code>Distributions.jl</code> constructs normal distributions by saving the corresponding covariance matrices in a <code>PDMat</code> object from <code>PDMats.jl</code>. This construction always computes the Cholesky decompositions of the covariance matrices, which is very convenient for sampling-based procedures. However, in <code>RxInfer.jl</code> we mostly base our computations on analytical expressions which do not always need to compute the Cholesky decomposition. In order to reduce the overhead that <code>Distributions.jl</code> introduces, we therefore have custom implementations.</li><li>Depending on the update rules, we might favor different parameterizations of the normal distributions. <code>ReactiveMP.jl</code> has quite a variety in parameterizations that allow us to efficient computations where we convert between parameterizations as little as possible.</li><li>In certain situations we value stability a lot, especially when inverting matrices. <code>PDMats.jl</code>, and hence <code>Distributions.jl</code>, is not capable to fulfill all needs that we have here. Therefore we use <code>PositiveFactorizations.jl</code> to cope with the corner-cases.</li></ol><h2 id="user-guide-model-specification-visualization"><a class="docs-heading-anchor" href="#user-guide-model-specification-visualization">Model structure visualisation</a><a id="user-guide-model-specification-visualization-1"></a><a class="docs-heading-anchor-permalink" href="#user-guide-model-specification-visualization" title="Permalink"></a></h2><p>Models specified using GraphPPL.jl in RxInfer.jl can be visualized in several ways to help understand their structure and relationships between variables. Let&#39;s create a simple model and visualize it.</p><pre><code class="language-julia hljs">using RxInfer
+
+@model function coin_toss(y)
+    t ~ Beta(1, 1)
+    for i in eachindex(y)
+        y[i] ~ Bernoulli(t)
+    end
+end
+
+model_generator = coin_toss() | (y = [ true, false, true ], )
+model_to_plot   = RxInfer.getmodel(RxInfer.create_model(model_generator))</code></pre><h3 id="user-guide-model-specification-visualization-graphviz"><a class="docs-heading-anchor" href="#user-guide-model-specification-visualization-graphviz">GraphViz.jl</a><a id="user-guide-model-specification-visualization-graphviz-1"></a><a class="docs-heading-anchor-permalink" href="#user-guide-model-specification-visualization-graphviz" title="Permalink"></a></h3><p>It is possible to visualize the model structure after conditioning on data with the <code>GraphViz.jl</code> package. Note that this package is not included in the <code>RxInfer</code> package and must be installed separately.</p><pre><code class="language-julia hljs">using GraphViz
+
+# Call `load` function from `GraphViz` to visualise the structure of the graph
+GraphViz.load(model_to_plot, strategy = :simple)</code></pre><img src='data:image/svg+xml;utf-8,<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.50.0 (20211204.2007)
+ -->
+<!-- Title: G Pages: 1 -->
+<svg width="704pt" height="720pt"
+ viewBox="0.00 0.00 703.59 720.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(2.24 2.24) rotate(0) translate(4 317.36)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-317.36 310.04,-317.36 310.04,4 -4,4"/>
+<!-- t_1:nothing -->
+<g id="node1" class="node">
+<title>t_1:nothing</title>
+<ellipse fill="none" stroke="black" cx="146.97" cy="-146.84" rx="18" ry="18"/>
+<text text-anchor="middle" x="146.97" y="-143.74" font-family="Times,serif" font-size="12.00">t</text>
+</g>
+<!-- Beta_4 -->
+<g id="node4" class="node">
+<title>Beta_4</title>
+<polygon fill="lightgray" stroke="black" points="118.23,-237.2 74.23,-237.2 74.23,-193.2 118.23,-193.2 118.23,-237.2"/>
+<text text-anchor="middle" x="96.23" y="-212.1" font-family="Times,serif" font-size="12.00">Beta</text>
+</g>
+<!-- t_1:nothing&%2345;&%2345;Beta_4 -->
+<g id="edge1" class="edge">
+<title>t_1:nothing&%2345;&%2345;Beta_4</title>
+<path fill="none" stroke="black" d="M136.21,-161.34C129.34,-170.59 120.31,-182.75 112.57,-193.18"/>
+</g>
+<!-- Bernoulli_6 -->
+<g id="node6" class="node">
+<title>Bernoulli_6</title>
+<polygon fill="lightgray" stroke="black" points="255.57,-223.48 183.57,-223.48 183.57,-151.48 255.57,-151.48 255.57,-223.48"/>
+<text text-anchor="middle" x="219.57" y="-184.38" font-family="Times,serif" font-size="12.00">Bernoulli</text>
+</g>
+<!-- t_1:nothing&%2345;&%2345;Bernoulli_6 -->
+<g id="edge2" class="edge">
+<title>t_1:nothing&%2345;&%2345;Bernoulli_6</title>
+<path fill="none" stroke="black" d="M162.72,-155.66C168.81,-159.07 176.05,-163.12 183.29,-167.17"/>
+</g>
+<!-- Bernoulli_8 -->
+<g id="node8" class="node">
+<title>Bernoulli_8</title>
+<polygon fill="lightgray" stroke="black" points="232.29,-116.77 160.29,-116.77 160.29,-44.77 232.29,-44.77 232.29,-116.77"/>
+<text text-anchor="middle" x="196.29" y="-77.67" font-family="Times,serif" font-size="12.00">Bernoulli</text>
+</g>
+<!-- t_1:nothing&%2345;&%2345;Bernoulli_8 -->
+<g id="edge3" class="edge">
+<title>t_1:nothing&%2345;&%2345;Bernoulli_8</title>
+<path fill="none" stroke="black" d="M157.92,-132.18C161.32,-127.61 165.24,-122.37 169.24,-117.01"/>
+</g>
+<!-- Bernoulli_10 -->
+<g id="node10" class="node">
+<title>Bernoulli_10</title>
+<polygon fill="lightgray" stroke="black" points="122.92,-125.32 50.92,-125.32 50.92,-53.32 122.92,-53.32 122.92,-125.32"/>
+<text text-anchor="middle" x="86.92" y="-86.22" font-family="Times,serif" font-size="12.00">Bernoulli</text>
+</g>
+<!-- t_1:nothing&%2345;&%2345;Bernoulli_10 -->
+<g id="edge4" class="edge">
+<title>t_1:nothing&%2345;&%2345;Bernoulli_10</title>
+<path fill="none" stroke="black" d="M133.94,-134.36C130.63,-131.19 126.91,-127.62 123.04,-123.92"/>
+</g>
+<!-- constvar_2:1 -->
+<g id="node2" class="node">
+<title>constvar_2:1</title>
+<ellipse fill="none" stroke="black" cx="102.78" cy="-295.36" rx="18" ry="18"/>
+<text text-anchor="middle" x="102.78" y="-292.26" font-family="Times,serif" font-size="12.00">1</text>
+</g>
+<!-- constvar_2:1&%2345;&%2345;Beta_4 -->
+<g id="edge5" class="edge">
+<title>constvar_2:1&%2345;&%2345;Beta_4</title>
+<path fill="none" stroke="black" d="M101.3,-277.17C100.33,-265.35 99.06,-249.85 98.04,-237.32"/>
+</g>
+<!-- constvar_3:1 -->
+<g id="node3" class="node">
+<title>constvar_3:1</title>
+<ellipse fill="none" stroke="black" cx="18" cy="-233.37" rx="18" ry="18"/>
+<text text-anchor="middle" x="18" y="-230.27" font-family="Times,serif" font-size="12.00">1</text>
+</g>
+<!-- constvar_3:1&%2345;&%2345;Beta_4 -->
+<g id="edge6" class="edge">
+<title>constvar_3:1&%2345;&%2345;Beta_4</title>
+<path fill="none" stroke="black" d="M35.75,-229.24C47.11,-226.61 61.94,-223.16 74.07,-220.35"/>
+</g>
+<!-- y_5:nothing -->
+<g id="node5" class="node">
+<title>y_5:nothing</title>
+<ellipse fill="none" stroke="black" cx="288.04" cy="-224.06" rx="18" ry="18"/>
+<text text-anchor="start" x="282.54" y="-221.96" font-family="Times,serif" font-size="12.00">y</text>
+<text text-anchor="start" x="289.54" y="-221.96" font-family="Times,serif" baseline-shift="sub" font-size="6.00">1</text>
+</g>
+<!-- y_5:nothing&%2345;&%2345;Bernoulli_6 -->
+<g id="edge7" class="edge">
+<title>y_5:nothing&%2345;&%2345;Bernoulli_6</title>
+<path fill="none" stroke="black" d="M272.16,-215.58C267.18,-212.92 261.47,-209.87 255.68,-206.78"/>
+</g>
+<!-- y_7:nothing -->
+<g id="node7" class="node">
+<title>y_7:nothing</title>
+<ellipse fill="none" stroke="black" cx="241.46" cy="-18" rx="18" ry="18"/>
+<text text-anchor="start" x="235.96" y="-15.9" font-family="Times,serif" font-size="12.00">y</text>
+<text text-anchor="start" x="242.96" y="-15.9" font-family="Times,serif" baseline-shift="sub" font-size="6.00">2</text>
+</g>
+<!-- y_7:nothing&%2345;&%2345;Bernoulli_8 -->
+<g id="edge8" class="edge">
+<title>y_7:nothing&%2345;&%2345;Bernoulli_8</title>
+<path fill="none" stroke="black" d="M230.76,-32.88C228.15,-36.5 225.24,-40.54 222.26,-44.69"/>
+</g>
+<!-- y_9:nothing -->
+<g id="node9" class="node">
+<title>y_9:nothing</title>
+<ellipse fill="none" stroke="black" cx="32.52" cy="-33.95" rx="18" ry="18"/>
+<text text-anchor="start" x="27.02" y="-31.85" font-family="Times,serif" font-size="12.00">y</text>
+<text text-anchor="start" x="34.02" y="-31.85" font-family="Times,serif" baseline-shift="sub" font-size="6.00">3</text>
+</g>
+<!-- y_9:nothing&%2345;&%2345;Bernoulli_10 -->
+<g id="edge9" class="edge">
+<title>y_9:nothing&%2345;&%2345;Bernoulli_10</title>
+<path fill="none" stroke="black" d="M45.14,-46.79C47.14,-48.84 49.3,-51.04 51.54,-53.32"/>
+</g>
+</g>
+</svg>
+'/><h3 id="user-guide-model-specification-visualization-cairo"><a class="docs-heading-anchor" href="#user-guide-model-specification-visualization-cairo">Cairo</a><a id="user-guide-model-specification-visualization-cairo-1"></a><a class="docs-heading-anchor-permalink" href="#user-guide-model-specification-visualization-cairo" title="Permalink"></a></h3><p>There is an alternative way to visuzalise the model structure with <code>Cairo</code> and <code>GraphPlot</code> Note, that those packages are also not included in the <code>RxInfer</code> package and must be installed separately.</p><pre><code class="language-julia hljs">using Cairo, GraphPlot
+
+# Call `gplot` function from `GraphPlot` to visualise the structure of the graph
+GraphPlot.gplot(model_to_plot)</code></pre><img src='data:image/svg+xml;utf-8,<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     version="1.2"
+     width="100mm" height="100mm" viewBox="0 0 100 100"
+     stroke="none"
+     fill="%23000000"
+     stroke-width="0.3"
+     font-size="3.88"
+>
+<defs>
+  <marker id="arrow" markerWidth="15" markerHeight="7" refX="5" refY="3.5" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L15,3.5 L0,7 z" stroke="context-stroke" fill="context-stroke"/>
+  </marker>
+</defs>
+<g fill="%23000000" fill-opacity="0.000" id="img-acdea1b6-1">
+  <g transform="translate(50,50)">
+    <path d="M-50,-50 L50,-50 50,50 -50,50  z" class="primitive"/>
+  </g>
+</g>
+<g stroke-width="0.95" stroke="%23D3D3D3" id="img-acdea1b6-2">
+</g>
+<g stroke-width="0.95" stroke="%23D3D3D3" id="img-acdea1b6-3">
+  <g transform="translate(50.76,62.71)">
+    <path fill="none" d="M-0.41,-9.71 L0.41,9.71 " class="primitive"/>
+  </g>
+  <g transform="translate(49.76,38.36)">
+    <path fill="none" d="M0.33,8.05 L-0.33,-8.05 " class="primitive"/>
+  </g>
+  <g transform="translate(38.54,48.39)">
+    <path fill="none" d="M8.4,0.95 L-8.4,-0.95 " class="primitive"/>
+  </g>
+  <g transform="translate(61.58,47.71)">
+    <path fill="none" d="M-8.12,1.43 L8.12,-1.43 " class="primitive"/>
+  </g>
+  <g transform="translate(56.54,83.46)">
+    <path fill="none" d="M3.39,5.03 L-3.39,-5.03 " class="primitive"/>
+  </g>
+  <g transform="translate(46.69,83.69)">
+    <path fill="none" d="M-2.97,5.13 L2.97,-5.13 " class="primitive"/>
+  </g>
+  <g transform="translate(49,17.67)">
+    <path fill="none" d="M-0.19,-6.05 L0.19,6.05 " class="primitive"/>
+  </g>
+  <g transform="translate(17.6,45.85)">
+    <path fill="none" d="M-6,-0.79 L6,0.79 " class="primitive"/>
+  </g>
+  <g transform="translate(82.3,43.89)">
+    <path fill="none" d="M6.13,-1.2 L-6.13,1.2 " class="primitive"/>
+  </g>
+</g>
+<g fill="%23D3D3D3" id="img-acdea1b6-4">
+</g>
+<g fill="%23D3D3D3" id="img-acdea1b6-5">
+</g>
+<g font-size="4" fill="%23000000" id="img-acdea1b6-6">
+</g>
+<g stroke-width="0" stroke="%23000000" stroke-opacity="0.000" fill="%2340E0D0" id="img-acdea1b6-7">
+  <g transform="translate(50.22,49.71)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(61.77,91.22)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(42.07,91.67)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(51.31,75.7)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(48.7,8.33)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(49.3,27.01)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(8.33,44.63)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(26.86,47.07)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(91.67,42.06)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(72.94,45.72)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+</g>
+<g font-family="Helvetica" font-size="4" fill="%23000000" id="img-acdea1b6-8">
+  <g transform="translate(50.22,49.71)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">t</text>
+    </g>
+  </g>
+  <g transform="translate(61.77,91.22)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">constvar</text>
+    </g>
+  </g>
+  <g transform="translate(42.07,91.67)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">constvar</text>
+    </g>
+  </g>
+  <g transform="translate(51.31,75.7)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">Beta</text>
+    </g>
+  </g>
+  <g transform="translate(48.7,8.33)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">y</text>
+    </g>
+  </g>
+  <g transform="translate(49.3,27.01)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">Bernoulli</text>
+    </g>
+  </g>
+  <g transform="translate(8.33,44.63)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">y</text>
+    </g>
+  </g>
+  <g transform="translate(26.86,47.07)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">Bernoulli</text>
+    </g>
+  </g>
+  <g transform="translate(91.67,42.06)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">y</text>
+    </g>
+  </g>
+  <g transform="translate(72.94,45.72)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">Bernoulli</text>
+    </g>
+  </g>
+</g>
+<g font-family="Helvetica" font-size="4" fill="%23000000" id="img-acdea1b6-9">
+  <g transform="translate(50,0)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em"></text>
+    </g>
+  </g>
+</g>
+</svg>
+'/><h2 id="Node-Contraction"><a class="docs-heading-anchor" href="#Node-Contraction">Node Contraction</a><a id="Node-Contraction-1"></a><a class="docs-heading-anchor-permalink" href="#Node-Contraction" title="Permalink"></a></h2><p>RxInfer&#39;s model specification extension for GraphPPL supports a feature called <em>node contraction</em>. This feature allows you to <em>contract</em> (or <em>replace</em>) a submodel with a corresponding factor node. Node contraction can be useful in several scenarios:</p><ul><li>When running inference in a submodel is computationally expensive</li><li>When a submodel contains many variables whose inference results are not of primary importance</li><li>When specialized message passing update rules can be derived for variables in the Markov blanket of the submodel</li></ul><p>Let&#39;s illustrate this concept with a simple example. We&#39;ll first create a basic submodel and then allow the inference backend to replace it with a corresponding node that has well-defined message update rules.</p><pre><code class="language-julia hljs">using RxInfer, Plots
+
+@model function ShiftedNormal(data, mean, precision, shift)
+    shifted_mean := mean + shift
+    data ~ Normal(mean = shifted_mean, precision = precision)
+end
+
+@model function Model(data, precision, shift)
+    mean ~ Normal(mean = 15.0, var = 1.0)
+    data ~ ShiftedNormal(mean = mean, precision = precision, shift = shift)
+end
+
+result = infer(
+    model = Model(precision = 1.0, shift = 1.0),
+    data  = (data = 10.0, )
+)
+
+plot(title = &quot;Inference results over `mean`&quot;)
+plot!(0:0.1:20.0, (x) -&gt; pdf(NormalMeanVariance(15.0, 1.0), x), label = &quot;prior&quot;, fill = 0, fillalpha = 0.2)
+plot!(0:0.1:20.0, (x) -&gt; pdf(result.posteriors[:mean], x), label = &quot;posterior&quot;, fill = 0, fillalpha = 0.2)
+vline!([ 10.0 ], label = &quot;data point&quot;)</code></pre><img src="17ebde59.svg" alt="Example block output"/><p>As we can see, we can run inference on this model. We can also visualize the model&#39;s structure, as shown in the <a href="#user-guide-model-specification-visualization">Model structure visualisation</a> section.</p><pre><code class="language-julia hljs">using Cairo, GraphPlot
+
+GraphPlot.gplot(getmodel(result.model))</code></pre><img src='data:image/svg+xml;utf-8,<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     version="1.2"
+     width="100mm" height="100mm" viewBox="0 0 100 100"
+     stroke="none"
+     fill="%23000000"
+     stroke-width="0.3"
+     font-size="3.88"
+>
+<defs>
+  <marker id="arrow" markerWidth="15" markerHeight="7" refX="5" refY="3.5" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L15,3.5 L0,7 z" stroke="context-stroke" fill="context-stroke"/>
+  </marker>
+</defs>
+<g fill="%23000000" fill-opacity="0.000" id="img-d68677d7-1">
+  <g transform="translate(50,50)">
+    <path d="M-50,-50 L50,-50 50,50 -50,50  z" class="primitive"/>
+  </g>
+</g>
+<g stroke-width="0.95" stroke="%23D3D3D3" id="img-d68677d7-2">
+</g>
+<g stroke-width="0.95" stroke="%23D3D3D3" id="img-d68677d7-3">
+  <g transform="translate(26.6,34.29)">
+    <path fill="none" d="M4.59,-0.3 L-4.59,0.3 " class="primitive"/>
+  </g>
+  <g transform="translate(42.67,33.54)">
+    <path fill="none" d="M-4.89,0.14 L4.89,-0.14 " class="primitive"/>
+  </g>
+  <g transform="translate(13.52,27.7)">
+    <path fill="none" d="M-3.25,-4.44 L3.25,4.44 " class="primitive"/>
+  </g>
+  <g transform="translate(14.72,44.44)">
+    <path fill="none" d="M-2.74,6.6 L2.74,-6.6 " class="primitive"/>
+  </g>
+  <g transform="translate(58.29,41.47)">
+    <path fill="none" d="M5.22,5.74 L-5.22,-5.74 " class="primitive"/>
+  </g>
+  <g transform="translate(72.55,58.01)">
+    <path fill="none" d="M-4.74,-5.81 L4.74,5.81 " class="primitive"/>
+  </g>
+  <g transform="translate(52.16,20.82)">
+    <path fill="none" d="M0.96,-9.21 L-0.96,9.21 " class="primitive"/>
+  </g>
+  <g transform="translate(80.95,79.02)">
+    <path fill="none" d="M1.18,9.38 L-1.18,-9.38 " class="primitive"/>
+  </g>
+  <g transform="translate(85.52,65.28)">
+    <path fill="none" d="M2.91,-0.52 L-2.91,0.52 " class="primitive"/>
+  </g>
+</g>
+<g fill="%23D3D3D3" id="img-d68677d7-4">
+</g>
+<g fill="%23D3D3D3" id="img-d68677d7-5">
+</g>
+<g font-size="4" fill="%23000000" id="img-d68677d7-6">
+</g>
+<g stroke-width="0" stroke="%23000000" stroke-opacity="0.000" fill="%2340E0D0" id="img-d68677d7-7">
+  <g transform="translate(34.48,33.78)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(8.33,20.61)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(10.71,54.08)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(18.72,34.8)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(65.73,49.65)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(53.46,8.33)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(50.86,33.3)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(82.54,91.67)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(91.67,64.19)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(79.37,66.38)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+</g>
+<g font-family="Helvetica" font-size="4" fill="%23000000" id="img-d68677d7-8">
+  <g transform="translate(34.48,33.78)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">mean</text>
+    </g>
+  </g>
+  <g transform="translate(8.33,20.61)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">constvar</text>
+    </g>
+  </g>
+  <g transform="translate(10.71,54.08)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">constvar</text>
+    </g>
+  </g>
+  <g transform="translate(18.72,34.8)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">NormalMeanVariance</text>
+    </g>
+  </g>
+  <g transform="translate(65.73,49.65)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">shifted_mean</text>
+    </g>
+  </g>
+  <g transform="translate(53.46,8.33)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">constvar</text>
+    </g>
+  </g>
+  <g transform="translate(50.86,33.3)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">+</text>
+    </g>
+  </g>
+  <g transform="translate(82.54,91.67)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">data</text>
+    </g>
+  </g>
+  <g transform="translate(91.67,64.19)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">constvar</text>
+    </g>
+  </g>
+  <g transform="translate(79.37,66.38)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">NormalMeanPrecision</text>
+    </g>
+  </g>
+</g>
+<g font-family="Helvetica" font-size="4" fill="%23000000" id="img-d68677d7-9">
+  <g transform="translate(50,0)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em"></text>
+    </g>
+  </g>
+</g>
+</svg>
+'/><p>Now, let&#39;s create an optimized version of the <code>ShiftedNormal</code> submodel as a standalone node with its own message passing update rules.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>Creating correct message passing update rules is beyond the scope of this section. For more information about custom message passing update rules, refer to the <a href="../customization/custom-node/#create-node">Custom Node</a> section.</p></div></div><pre><code class="language-julia hljs">@node typeof(ShiftedNormal) Stochastic [ data, mean, precision, shift ]
+
+@rule typeof(ShiftedNormal)(:mean, Marginalisation) (q_data::PointMass, q_precision::PointMass, q_shift::PointMass, ) = begin
+    return @call_rule NormalMeanPrecision(:μ, Marginalisation) (q_out = PointMass(mean(q_data) - mean(q_shift)), q_τ = q_precision)
+end
+
+result_with_contraction = infer(
+    model = Model(precision = 1.0, shift = 1.0),
+    data  = (data = 10.0, ),
+    allow_node_contraction = true
+)
+
+plot(title = &quot;Inference results over `mean` with node contraction&quot;)
+plot!(0:0.1:20.0, (x) -&gt; pdf(NormalMeanVariance(15.0, 1.0), x), label = &quot;prior&quot;, fill = 0, fillalpha = 0.2)
+plot!(0:0.1:20.0, (x) -&gt; pdf(result_with_contraction.posteriors[:mean], x), label = &quot;posterior&quot;, fill = 0, fillalpha = 0.2)
+vline!([ 10.0 ], label = &quot;data point&quot;)</code></pre><img src="e5183278.svg" alt="Example block output"/><p>As you can see, the inference result is identical to the previous case. However, the structure of the model is different:</p><pre><code class="language-julia hljs">GraphPlot.gplot(getmodel(result_with_contraction.model))</code></pre><img src='data:image/svg+xml;utf-8,<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     version="1.2"
+     width="100mm" height="100mm" viewBox="0 0 100 100"
+     stroke="none"
+     fill="%23000000"
+     stroke-width="0.3"
+     font-size="3.88"
+>
+<defs>
+  <marker id="arrow" markerWidth="15" markerHeight="7" refX="5" refY="3.5" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L15,3.5 L0,7 z" stroke="context-stroke" fill="context-stroke"/>
+  </marker>
+</defs>
+<g fill="%23000000" fill-opacity="0.000" id="img-fa6c56e1-1">
+  <g transform="translate(50,50)">
+    <path d="M-50,-50 L50,-50 50,50 -50,50  z" class="primitive"/>
+  </g>
+</g>
+<g stroke-width="1.06" stroke="%23D3D3D3" id="img-fa6c56e1-2">
+</g>
+<g stroke-width="1.06" stroke="%23D3D3D3" id="img-fa6c56e1-3">
+  <g transform="translate(36.8,40.69)">
+    <path fill="none" d="M8.49,3.87 L-8.49,-3.87 " class="primitive"/>
+  </g>
+  <g transform="translate(60.71,51.69)">
+    <path fill="none" d="M-8.73,-4.06 L8.73,4.06 " class="primitive"/>
+  </g>
+  <g transform="translate(16.64,42.38)">
+    <path fill="none" d="M-5.51,4.7 L5.51,-4.7 " class="primitive"/>
+  </g>
+  <g transform="translate(19.29,21.81)">
+    <path fill="none" d="M-4.24,-10.08 L4.24,10.08 " class="primitive"/>
+  </g>
+  <g transform="translate(82.22,61.62)">
+    <path fill="none" d="M6.1,2.78 L-6.1,-2.78 " class="primitive"/>
+  </g>
+  <g transform="translate(78.45,43.04)">
+    <path fill="none" d="M4.32,-10.84 L-4.32,10.84 " class="primitive"/>
+  </g>
+  <g transform="translate(74.35,74.48)">
+    <path fill="none" d="M1.23,13.51 L-1.23,-13.51 " class="primitive"/>
+  </g>
+</g>
+<g fill="%23D3D3D3" id="img-fa6c56e1-4">
+</g>
+<g fill="%23D3D3D3" id="img-fa6c56e1-5">
+</g>
+<g font-size="4" fill="%23000000" id="img-fa6c56e1-6">
+</g>
+<g stroke-width="0" stroke="%23000000" stroke-opacity="0.000" fill="%2340E0D0" id="img-fa6c56e1-7">
+  <g transform="translate(48.64,46.08)">
+    <circle cx="0" cy="0" r="3.54" class="primitive"/>
+  </g>
+  <g transform="translate(8.33,49.46)">
+    <circle cx="0" cy="0" r="3.54" class="primitive"/>
+  </g>
+  <g transform="translate(13.62,8.33)">
+    <circle cx="0" cy="0" r="3.54" class="primitive"/>
+  </g>
+  <g transform="translate(24.95,35.29)">
+    <circle cx="0" cy="0" r="3.54" class="primitive"/>
+  </g>
+  <g transform="translate(91.67,65.93)">
+    <circle cx="0" cy="0" r="3.54" class="primitive"/>
+  </g>
+  <g transform="translate(84.13,28.77)">
+    <circle cx="0" cy="0" r="3.54" class="primitive"/>
+  </g>
+  <g transform="translate(75.91,91.67)">
+    <circle cx="0" cy="0" r="3.54" class="primitive"/>
+  </g>
+  <g transform="translate(72.78,57.3)">
+    <circle cx="0" cy="0" r="3.54" class="primitive"/>
+  </g>
+</g>
+<g font-family="Helvetica" font-size="4" fill="%23000000" id="img-fa6c56e1-8">
+  <g transform="translate(48.64,46.08)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">mean</text>
+    </g>
+  </g>
+  <g transform="translate(8.33,49.46)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">constvar</text>
+    </g>
+  </g>
+  <g transform="translate(13.62,8.33)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">constvar</text>
+    </g>
+  </g>
+  <g transform="translate(24.95,35.29)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">NormalMeanVariance</text>
+    </g>
+  </g>
+  <g transform="translate(91.67,65.93)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">data</text>
+    </g>
+  </g>
+  <g transform="translate(84.13,28.77)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">constvar</text>
+    </g>
+  </g>
+  <g transform="translate(75.91,91.67)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">constvar</text>
+    </g>
+  </g>
+  <g transform="translate(72.78,57.3)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">ShiftedNormal</text>
+    </g>
+  </g>
+</g>
+<g font-family="Helvetica" font-size="4" fill="%23000000" id="img-fa6c56e1-9">
+  <g transform="translate(50,0)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em"></text>
+    </g>
+  </g>
+</g>
+</svg>
+'/><p>With node contraction, we no longer have access to the variables defined inside the <code>ShiftedNormal</code> submodel, as it has been contracted to a single factor node. It&#39;s worth noting that this feature heavily relies on existing message passing update rules for the submodel. However, it can also be combined with another useful inference technique <a href="../inference/undefinedrules/#inference-undefinedrules">where no explicit message passing update rules are required</a>.</p><p>We can also verify that node contraction indeed improves the performance of the inference:</p><pre><code class="language-julia hljs">using BenchmarkTools
+
+benchmark_without_contraction = @benchmark infer(
+    model = Model(precision = 1.0, shift = 1.0),
+    data  = (data = 10.0, )
+)
+
+benchmark_with_contraction = @benchmark infer(
+    model = Model(precision = 1.0, shift = 1.0),
+    data  = (data = 10.0, ),
+    allow_node_contraction = true
+)</code></pre><p>Let&#39;s examine the benchmark results:</p><pre><code class="language-julia hljs">benchmark_without_contraction</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">BenchmarkTools.Trial: 10000 samples with 1 evaluation per sample.
+ Range <span class="sgr90">(</span><span class="sgr36"><span class="sgr1">min</span></span> … <span class="sgr35">max</span><span class="sgr90">):  </span><span class="sgr36"><span class="sgr1">177.362 μs</span></span> … <span class="sgr35"> 18.887 ms</span>  <span class="sgr90">┊</span> GC <span class="sgr90">(</span>min … max<span class="sgr90">): </span>0.00% … 97.80%
+ Time  <span class="sgr90">(</span><span class="sgr34"><span class="sgr1">median</span></span><span class="sgr90">):     </span><span class="sgr34"><span class="sgr1">186.619 μs               </span></span><span class="sgr90">┊</span> GC <span class="sgr90">(</span>median<span class="sgr90">):    </span>0.00%
+ Time  <span class="sgr90">(</span><span class="sgr32"><span class="sgr1">mean</span></span> ± <span class="sgr32">σ</span><span class="sgr90">):   </span><span class="sgr32"><span class="sgr1">198.623 μs</span></span> ± <span class="sgr32">334.898 μs</span>  <span class="sgr90">┊</span> GC <span class="sgr90">(</span>mean ± σ<span class="sgr90">):  </span>3.58% ±  2.12%
+
+       ▃▅█▇▅▄<span class="sgr34">▁</span>              <span class="sgr32"> </span>                                    
+  ▁▁▂▄███████<span class="sgr34">█</span>█▇▆▅▅▄▄▃▃▂▂▂▃▃<span class="sgr32">▃</span>▃▃▄▄▄▄▄▄▃▃▃▂▂▂▂▂▂▂▁▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁ ▃
+  177 μs<span class="sgr90">           Histogram: frequency by time</span>          227 μs <span class="sgr1">&lt;</span>
+
+ Memory estimate<span class="sgr90">: </span><span class="sgr33">93.66 KiB</span>, allocs estimate<span class="sgr90">: </span><span class="sgr33">1433</span>.</code></pre><pre><code class="language-julia hljs">benchmark_with_contraction</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">BenchmarkTools.Trial: 10000 samples with 1 evaluation per sample.
+ Range <span class="sgr90">(</span><span class="sgr36"><span class="sgr1">min</span></span> … <span class="sgr35">max</span><span class="sgr90">):  </span><span class="sgr36"><span class="sgr1">111.018 μs</span></span> … <span class="sgr35"> 15.103 ms</span>  <span class="sgr90">┊</span> GC <span class="sgr90">(</span>min … max<span class="sgr90">): </span>0.00% … 96.26%
+ Time  <span class="sgr90">(</span><span class="sgr34"><span class="sgr1">median</span></span><span class="sgr90">):     </span><span class="sgr34"><span class="sgr1">117.390 μs               </span></span><span class="sgr90">┊</span> GC <span class="sgr90">(</span>median<span class="sgr90">):    </span>0.00%
+ Time  <span class="sgr90">(</span><span class="sgr32"><span class="sgr1">mean</span></span> ± <span class="sgr32">σ</span><span class="sgr90">):   </span><span class="sgr32"><span class="sgr1">126.966 μs</span></span> ± <span class="sgr32">263.812 μs</span>  <span class="sgr90">┊</span> GC <span class="sgr90">(</span>mean ± σ<span class="sgr90">):  </span>4.02% ±  1.94%
+
+      ▄█▇▄<span class="sgr34">▁</span>            <span class="sgr32"> </span>                                         
+  ▁▁▃█████<span class="sgr34">█</span>█▆▅▄▄▃▃▂▂▂▂▂<span class="sgr32">▂</span>▂▂▂▂▃▂▃▃▃▃▂▂▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ ▂
+  111 μs<span class="sgr90">           Histogram: frequency by time</span>          157 μs <span class="sgr1">&lt;</span>
+
+ Memory estimate<span class="sgr90">: </span><span class="sgr33">68.27 KiB</span>, allocs estimate<span class="sgr90">: </span><span class="sgr33">977</span>.</code></pre><p>As we can see, the inference with node contraction runs faster due to the simplified model structure and optimized message update rules.  This performance improvement is reflected in reduced execution time and fewer memory allocations.</p><h3 id="user-guide-model-specification-node-creation-options"><a class="docs-heading-anchor" href="#user-guide-model-specification-node-creation-options">Node creation options</a><a id="user-guide-model-specification-node-creation-options-1"></a><a class="docs-heading-anchor-permalink" href="#user-guide-model-specification-node-creation-options" title="Permalink"></a></h3><p><code>GraphPPL</code> allows to pass optional arguments to the node creation constructor with the <code>where { options...  }</code> options specification syntax.</p><p>Example:</p><pre><code class="language-julia hljs">y ~ Normal(mean = y_mean, var = y_var) where { meta = ... }</code></pre><p>A list of the available options specific to the <code>ReactiveMP</code> inference engine is presented below.</p><h4 id="Metadata-option"><a class="docs-heading-anchor" href="#Metadata-option">Metadata option</a><a id="Metadata-option-1"></a><a class="docs-heading-anchor-permalink" href="#Metadata-option" title="Permalink"></a></h4><p>Is is possible to pass any extra metadata to a factor node with the <code>meta</code> option. Metadata can be later accessed in message computation rules.</p><pre><code class="language-julia hljs">z ~ f(x, y) where { meta = Linearization() }
+d ~ g(a, b) where { meta = Unscented() }</code></pre><p>This option might be useful to change message passing rules around a specific factor node. Read more about this feature in <a href="../meta-specification/#user-guide-meta-specification">Meta Specification</a> section.</p><h4 id="Dependencies-option"><a class="docs-heading-anchor" href="#Dependencies-option">Dependencies option</a><a id="Dependencies-option-1"></a><a class="docs-heading-anchor-permalink" href="#Dependencies-option" title="Permalink"></a></h4><p>A user can modify default computational pipeline of a node with the <code>dependencies</code> options.  Read more about different options in the <a href="https://reactivebayes.github.io/ReactiveMP.jl/stable/"><code>ReactiveMP.jl</code> documentation</a>.</p><pre><code class="language-julia hljs">y[k - 1] ~ Probit(x[k]) where {
+    # This specification indicates that in order to compute an outbound message from the `in` interface
+    # We need an inbound message from the same edge initialized to `NormalMeanPrecision(0.0, 1.0)`
+    dependencies = RequireMessageFunctionalDependencies(in = NormalMeanPrecision(0.0, 1.0))
+}</code></pre><h2 id="Read-also"><a class="docs-heading-anchor" href="#Read-also">Read also</a><a id="Read-also-1"></a><a class="docs-heading-anchor-permalink" href="#Read-also" title="Permalink"></a></h2><ul><li><a href="../constraints-specification/#user-guide-constraints-specification">Constraints specification</a></li><li><a href="../meta-specification/#user-guide-meta-specification">Meta specification</a></li><li><a href="../inference/overview/#user-guide-inference-execution">Inference execution</a></li><li><a href="../debugging/#user-guide-debugging">Debugging inference</a></li></ul><script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+mermaid.initialize({
+    startOnLoad: true,
+    theme: "neutral"
+});
+</script></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../comparison/">« RxInfer.jl vs. Others</a><a class="docs-footer-nextpage" href="../constraints-specification/">Constraints specification »</a><div class="flexbox-break"></div><p class="footer-message">Created in <a href="https://biaslab.github.io/">BIASlab</a>, maintained by <a href="https://github.com/ReactiveBayes">ReactiveBayes</a>, powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.0 on <span class="colophon-date" title="Friday 17 January 2025 21:02">Friday 17 January 2025</span>. Using Julia version 1.10.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

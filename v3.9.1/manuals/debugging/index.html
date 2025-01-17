@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Debugging · RxInfer.jl</title><meta name="title" content="Debugging · RxInfer.jl"/><meta property="og:title" content="Debugging · RxInfer.jl"/><meta property="twitter:title" content="Debugging · RxInfer.jl"/><meta name="description" content="Julia package for automated Bayesian inference on a factor graph with reactive message passing"/><meta property="og:description" content="Julia package for automated Bayesian inference on a factor graph with reactive message passing"/><meta property="twitter:description" content="Julia package for automated Bayesian inference on a factor graph with reactive message passing"/><meta property="og:url" content="https://reactivebayes.github.io/RxInfer.jl/manuals/debugging/"/><meta property="twitter:url" content="https://reactivebayes.github.io/RxInfer.jl/manuals/debugging/"/><link rel="canonical" href="https://reactivebayes.github.io/RxInfer.jl/manuals/debugging/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/theme.css" rel="stylesheet" type="text/css"/><link href="../../assets/header.css" rel="stylesheet" type="text/css"/><script src="../../assets/header.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img class="docs-light-only" src="../../assets/logo.svg" alt="RxInfer.jl logo"/><img class="docs-dark-only" src="../../assets/logo-dark.svg" alt="RxInfer.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../../">RxInfer.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">User guide</span><ul><li><a class="tocitem" href="../getting-started/">Getting started</a></li><li><a class="tocitem" href="../comparison/">RxInfer.jl vs. Others</a></li><li><a class="tocitem" href="../model-specification/">Model specification</a></li><li><a class="tocitem" href="../constraints-specification/">Constraints specification</a></li><li><a class="tocitem" href="../meta-specification/">Meta specification</a></li><li><input class="collapse-toggle" id="menuitem-2-6" type="checkbox"/><label class="tocitem" for="menuitem-2-6"><span class="docs-label">Inference specification</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../inference/overview/">Overview</a></li><li><a class="tocitem" href="../inference/static/">Static inference</a></li><li><a class="tocitem" href="../inference/streamlined/">Streamline inference</a></li><li><a class="tocitem" href="../inference/initialization/">Initialization</a></li><li><a class="tocitem" href="../inference/autoupdates/">Auto-updates</a></li><li><a class="tocitem" href="../inference/delta-node/">Deterministic nodes</a></li><li><a class="tocitem" href="../inference/nonconjugate/">Non-conjugate inference</a></li><li><a class="tocitem" href="../inference/undefinedrules/">Undefined message update rules</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-2-7" type="checkbox"/><label class="tocitem" for="menuitem-2-7"><span class="docs-label">Inference customization</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../customization/custom-node/">Defining a custom node and rules</a></li><li><a class="tocitem" href="../customization/postprocess/">Inference results postprocessing</a></li></ul></li><li class="is-active"><a class="tocitem" href>Debugging</a><ul class="internal"><li><a class="tocitem" href="#Requesting-a-trace-of-messages"><span>Requesting a trace of messages</span></a></li><li><a class="tocitem" href="#user-guide-debugging-callbacks"><span>Using <code>callbacks</code> in the <code>infer</code> function</span></a></li><li><a class="tocitem" href="#Using-LoggerPipelineStage"><span>Using <code>LoggerPipelineStage</code></span></a></li></ul></li><li><a class="tocitem" href="../migration-guide-v2-v3/">Migration from v2 to v3</a></li><li><input class="collapse-toggle" id="menuitem-2-10" type="checkbox"/><label class="tocitem" for="menuitem-2-10"><span class="docs-label">Sharp bits of RxInfer</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../sharpbits/overview/">Overview</a></li><li><a class="tocitem" href="../sharpbits/rule-not-found/">Rule Not Found Error</a></li><li><a class="tocitem" href="../sharpbits/stack-overflow-inference/">Stack Overflow in Message Computations</a></li><li><a class="tocitem" href="../sharpbits/usage-colon-equality/">Using <code>=</code> instead of <code>:=</code> for deterministic nodes</a></li></ul></li></ul></li><li><span class="tocitem">Library</span><ul><li><a class="tocitem" href="../../library/model-construction/">Model construction</a></li><li><a class="tocitem" href="../../library/bethe-free-energy/">Bethe Free Energy</a></li><li><a class="tocitem" href="../../library/functional-forms/">Functional form constraints</a></li><li><a class="tocitem" href="../../library/exported-methods/">Exported methods</a></li></ul></li><li><a class="tocitem" href="../../examples/overview/">Examples</a></li><li><span class="tocitem">Contributing</span><ul><li><a class="tocitem" href="../../contributing/guide/">Contribution guide</a></li><li><a class="tocitem" href="../../contributing/guidelines/">Contribution guidelines</a></li><li><a class="tocitem" href="../../contributing/new-documentation/">Contributing to the documentation</a></li><li><a class="tocitem" href="../../contributing/new-example/">Contributing to the examples</a></li><li><a class="tocitem" href="../../contributing/new-release/">Publishing a new release</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">User guide</a></li><li class="is-active"><a href>Debugging</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Debugging</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/ReactiveBayes/RxInfer.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/ReactiveBayes/RxInfer.jl/blob/main/docs/src/manuals/debugging.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="user-guide-debugging"><a class="docs-heading-anchor" href="#user-guide-debugging">Debugging</a><a id="user-guide-debugging-1"></a><a class="docs-heading-anchor-permalink" href="#user-guide-debugging" title="Permalink"></a></h1><p>Debugging inference in <code>RxInfer</code> can be quite challenging, mostly due to the reactive nature of the inference, undefined order of computations, the use of observables, and generally hard-to-read stack traces in Julia. Below we discuss ways to help you find problems in your model that prevents you from getting the results you want. </p><h2 id="Requesting-a-trace-of-messages"><a class="docs-heading-anchor" href="#Requesting-a-trace-of-messages">Requesting a trace of messages</a><a id="Requesting-a-trace-of-messages-1"></a><a class="docs-heading-anchor-permalink" href="#Requesting-a-trace-of-messages" title="Permalink"></a></h2><p><code>RxInfer</code> provides a way that allows to save the history of the computations leading up to the computed messages and marginals in the inference procedure. This history is added on top of messages and marginals and is referred to as a <em>Memory Addon</em>. Below is an example explaining how you can extract this history and use it to fix a bug.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>Addons is a feature of <code>ReactiveMP.</code> Read more about implementing custom addons in the corresponding section of <code>ReactiveMP</code> package.</p></div></div><p>We show the application of the Memory Addon on the coin toss example from <a href="../getting-started/#user-guide-getting-started-coin-flip-simulation">earlier</a> in the documentation. We model the binary outcome <span>$x$</span> (heads or tails) using a <code>Bernoulli</code> distribution, with a parameter <span>$\theta$</span> that represents the probability of landing on heads. We have a <code>Beta</code> prior distribution for the <span>$\theta$</span> parameter, with a known shape <span>$\alpha$</span> and rate <span>$\beta$</span> parameter.</p><p class="math-container">\[\theta \sim \mathrm{Beta}(a, b)\]</p><p class="math-container">\[x_i \sim \mathrm{Bernoulli}(\theta)\]</p><p>where <span>$x_i \in {0, 1}$</span> are the binary observations (heads = 1, tails = 0). This is the corresponding RxInfer model:</p><pre><code class="language-julia hljs">using RxInfer, Random, Plots
+
+n = 4
+θ_real = 0.3
+dataset = float.(rand(Bernoulli(θ_real), n))
+
+@model function coin_model(x)
+    θ  ~ Beta(4, huge)
+    x .~ Bernoulli(θ)
+end
+
+result = infer(
+    model = coin_model(),
+    data  = (x = dataset, ),
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Inference results:
+  Posteriors       | available for (θ)
+</code></pre><p>The model will run without errors. But when we plot the posterior distribution for <span>$\theta$</span>, something&#39;s wrong. The posterior seems to be a flat distribution:</p><pre><code class="language-julia hljs">rθ = range(0, 1, length = 1000)
+
+plot(rθ, (rvar) -&gt; pdf(result.posteriors[:θ], rvar), label=&quot;Infered posterior&quot;)
+vline!([θ_real], label=&quot;Real θ&quot;, title = &quot;Inference results&quot;)</code></pre><img src="794577be.svg" alt="Example block output"/><p>We can figure out what&#39;s wrong by tracing the computation of the posterior with the Memory Addon.  To obtain the trace, we have to add <code>addons = (AddonMemory(),)</code> as an argument to the inference function.  Note, that the argument to the <code>addons</code> keyword argument must be a tuple, because multiple addons can be activated  at the same time. Here, we create a tuple with a single element however.</p><pre><code class="language-julia hljs">result = infer(
+    model = coin_model(),
+    data  = (x = dataset, ),
+    addons = (AddonMemory(),)
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Inference results:
+  Posteriors       | available for (θ)
+</code></pre><p>Now we have access to the messages that led to the marginal posterior:</p><pre><code class="language-julia hljs">RxInfer.ReactiveMP.getaddons(result.posteriors[:θ])</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(AddonMemory(Product memory:
+ Message mapping memory:
+    At the node: Beta
+    Towards interface: Val{:out}()
+    With local constraint: Marginalisation()
+    With addons: (AddonMemory(nothing),)
+    With input marginals on Val{(:a, :b)}() edges: (PointMass{Int64}(4), PointMass{TinyHugeNumbers.HugeNumber}(huge))
+    With the result: Beta{Float64}(α=4.0, β=1.0e12)
+ Message mapping memory:
+    At the node: Bernoulli
+    Towards interface: Val{:p}()
+    With local constraint: Marginalisation()
+    With addons: (AddonMemory(nothing),)
+    With input marginals on Val{(:out,)}() edges: (PointMass{Float64}(0.0),)
+    With the result: Beta{Float64}(α=1.0, β=2.0)
+ Message mapping memory:
+    At the node: Bernoulli
+    Towards interface: Val{:p}()
+    With local constraint: Marginalisation()
+    With addons: (AddonMemory(nothing),)
+    With input marginals on Val{(:out,)}() edges: (PointMass{Float64}(0.0),)
+    With the result: Beta{Float64}(α=1.0, β=2.0)
+ Message mapping memory:
+    At the node: Bernoulli
+    Towards interface: Val{:p}()
+    With local constraint: Marginalisation()
+    With addons: (AddonMemory(nothing),)
+    With input marginals on Val{(:out,)}() edges: (PointMass{Float64}(0.0),)
+    With the result: Beta{Float64}(α=1.0, β=2.0)
+ Message mapping memory:
+    At the node: Bernoulli
+    Towards interface: Val{:p}()
+    With local constraint: Marginalisation()
+    With addons: (AddonMemory(nothing),)
+    With input marginals on Val{(:out,)}() edges: (PointMass{Float64}(0.0),)
+    With the result: Beta{Float64}(α=1.0, β=2.0)
+),)</code></pre><p><img src="../../assets/img/debugging_messages.png" alt="Addons_messages"/></p><p>The messages in the factor graph are marked in color. If you&#39;re interested in the mathematics behind these results, consider verifying them manually using the general equation for sum-product messages:</p><p class="math-container">\[\underbrace{\overrightarrow{\mu}_{θ}(θ)}_{\substack{ \text{outgoing}\\ \text{message}}} = \sum_{x_1,\ldots,x_n} \underbrace{\overrightarrow{\mu}_{X_1}(x_1)\cdots \overrightarrow{\mu}_{X_n}(x_n)}_{\substack{\text{incoming} \\ \text{messages}}} \cdot \underbrace{f(θ,x_1,\ldots,x_n)}_{\substack{\text{node}\\ \text{function}}}\]</p><p><img src="../../assets/img/debugging_graph.png" alt="Graph"/></p><p>Note that the posterior (yellow) has a rate parameter on the order of <code>1e12</code>. Our plot failed because a Beta distribution with such a rate parameter cannot be accurately depicted using the range of <span>$\theta$</span> we used in the code block above. So why does the posterior have this rate parameter?</p><p>All the observations (purple, green, pink, blue) have much smaller rate parameters. It seems the prior distribution (red) has an unusual rate parameter, namely <code>1e12</code>. If we look back at the model, the parameter was set to <code>huge</code> (which is a reserved keyword meaning <code>1e12</code>). Reducing the prior rate parameter will ensure the posterior has a reasonable rate parameter as well.</p><pre><code class="language-julia hljs">@model function coin_model(x)
+    θ  ~ Beta(4, 100)
+    x .~ Bernoulli(θ)
+end
+
+result = infer(
+    model = coin_model(),
+    data  = (x = dataset, ),
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Inference results:
+  Posteriors       | available for (θ)
+</code></pre><pre><code class="language-julia hljs">rθ = range(0, 1, length = 1000)
+
+plot(rθ, (rvar) -&gt; pdf(result.posteriors[:θ], rvar), fillalpha = 0.4, fill = 0, label=&quot;Infered posterior&quot;)
+vline!([θ_real], label=&quot;Real θ&quot;, title = &quot;Inference results&quot;)</code></pre><img src="3c87e304.svg" alt="Example block output"/><p>Now the posterior has much more sensible shape thus confirming that we have identified the original issue correctly.  We can run the model with more observations, to get an even better posterior:</p><pre><code class="language-julia hljs">result = infer(
+    model = coin_model(),
+    data  = (x = float.(rand(Bernoulli(θ_real), 1000)), ),
+)
+
+rθ = range(0, 1, length = 1000)
+plot(rθ, (rvar) -&gt; pdf(result.posteriors[:θ], rvar), fillalpha = 0.4, fill = 0, label=&quot;Infered posterior (1000 observations)&quot;)
+vline!([θ_real], label=&quot;Real θ&quot;, title = &quot;Inference results&quot;)</code></pre><img src="02e0492b.svg" alt="Example block output"/><h2 id="user-guide-debugging-callbacks"><a class="docs-heading-anchor" href="#user-guide-debugging-callbacks">Using <code>callbacks</code> in the <code>infer</code> function</a><a id="user-guide-debugging-callbacks-1"></a><a class="docs-heading-anchor-permalink" href="#user-guide-debugging-callbacks" title="Permalink"></a></h2><p>Another way to inspect the inference procedure is to use the <code>callbacks</code> or <code>events</code> from the <a href="../inference/overview/#RxInfer.infer"><code>infer</code></a> function. Read more about callbacks in the documentation to the <a href="../inference/overview/#RxInfer.infer"><code>infer</code></a> function. Here, we show a simple application of callbacks to a simple IID inference problem. We start with model specification:</p><pre><code class="language-julia hljs">using RxInfer
+
+@model function iid_normal(y)
+    μ  ~ Normal(mean = 0.0, variance = 100.0)
+    γ  ~ Gamma(shape = 1.0, rate = 1.0)
+    y .~ Normal(mean = μ, precision = γ)
+end</code></pre><p>Next, let us define a syntehtic dataset:</p><pre><code class="language-julia hljs">dataset = rand(NormalMeanPrecision(3.1415, 30.0), 100)</code></pre><p>Now, we can use the <code>callbacks</code> argument of the <code>infer</code> function to track the order of posteriors computation and their intermediate values for each variational iteration:</p><pre><code class="language-julia hljs"># A callback that will be called every time before a variational iteration starts
+function before_iteration_callback(model, iteration)
+    println(&quot;Starting iteration &quot;, iteration)
+end
+
+# A callback that will be called every time after a variational iteration finishes
+function after_iteration_callback(model, iteration)
+    println(&quot;Iteration &quot;, iteration, &quot; has been finished&quot;)
+end
+
+# A callback that will be called every time a posterior is updated
+function on_marginal_update_callback(model, variable_name, posterior)
+    println(&quot;Latent variable &quot;, variable_name, &quot; has been updated. Estimated mean is &quot;, mean(posterior), &quot; with standard deviation &quot;, std(posterior))
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">on_marginal_update_callback (generic function with 1 method)</code></pre><p>After we have defined all callbacks of interest, we can call the <a href="../inference/overview/#RxInfer.infer"><code>infer</code></a> function passing them in the <code>callback</code> argument as a named tuple:</p><pre><code class="language-julia hljs">init = @initialization begin
+    q(μ) = vague(NormalMeanVariance)
+end
+
+result = infer(
+    model = iid_normal(),
+    data  = (y = dataset, ),
+    constraints = MeanField(),
+    iterations = 5,
+    initialization = init,
+    returnvars = KeepLast(),
+    callbacks = (
+        on_marginal_update = on_marginal_update_callback,
+        before_iteration   = before_iteration_callback,
+        after_iteration    = after_iteration_callback
+    )
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Starting iteration 1
+Latent variable γ has been updated. Estimated mean is 1.0199999999898968e-12 with standard deviation 1.4282856856944225e-13
+Latent variable μ has been updated. Estimated mean is 3.200918005880388e-8 with standard deviation 9.999999948999998
+Iteration 1 has been finished
+Starting iteration 2
+Latent variable γ has been updated. Estimated mean is 0.009280732457996287 with standard deviation 0.001299562482612452
+Latent variable μ has been updated. Estimated mean is 3.1047017424404677 with standard deviation 1.0324799460050897
+Iteration 2 has been finished
+Starting iteration 3
+Latent variable γ has been updated. Estimated mean is 0.9072818524859227 with standard deviation 0.12704487086360763
+Latent variable μ has been updated. Estimated mean is 3.1378090925430335 with standard deviation 0.1049796100915997
+Iteration 3 has been finished
+Starting iteration 4
+Latent variable γ has been updated. Estimated mean is 14.97268093091809 with standard deviation 2.096594691207056
+Latent variable μ has been updated. Estimated mean is 3.1381339807007866 with standard deviation 0.02584334735002812
+Iteration 4 has been finished
+Starting iteration 5
+Latent variable γ has been updated. Estimated mean is 17.655882698441026 with standard deviation 2.4723180908561684
+Latent variable μ has been updated. Estimated mean is 3.1381371658761568 with standard deviation 0.0237987448400497
+Iteration 5 has been finished</code></pre><p>We can see that the callback has been correctly executed for each intermediate variational iteration.</p><pre><code class="language-julia hljs">println(&quot;Estimated mean: &quot;, mean(result.posteriors[:μ]))
+println(&quot;Estimated precision: &quot;, mean(result.posteriors[:γ]))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Estimated mean: 3.1381371658761568
+Estimated precision: 17.655882698441026</code></pre><h2 id="Using-LoggerPipelineStage"><a class="docs-heading-anchor" href="#Using-LoggerPipelineStage">Using <code>LoggerPipelineStage</code></a><a id="Using-LoggerPipelineStage-1"></a><a class="docs-heading-anchor-permalink" href="#Using-LoggerPipelineStage" title="Permalink"></a></h2><p><code>ReactiveMP</code> inference engine allows attaching extra computations to the default computational pipeline of message passing.  Read more about pipelines in the corresponding section of <code>ReactiveMP</code>. Here we show how to use <code>LoggerPipelineStage</code> to trace the order of message passing updates for debugging purposes. We start with model specification:</p><pre><code class="language-julia hljs">using RxInfer
+
+@model function iid_normal_with_pipeline(y)
+    μ  ~ Normal(mean = 0.0, variance = 100.0)
+    γ  ~ Gamma(shape = 1.0, rate = 1.0)
+    y .~ Normal(mean = μ, precision = γ) where { pipeline = LoggerPipelineStage() }
+end</code></pre><p>Next, let us define a syntehtic dataset:</p><pre><code class="language-julia hljs"># We use less data points in the dataset to reduce the amount of text printed
+# during the inference
+dataset = rand(NormalMeanPrecision(3.1415, 30.0), 5)</code></pre><p>Now, we can call the <a href="../inference/overview/#RxInfer.infer"><code>infer</code></a> function. We combine the pipeline logger stage with the callbacks, which were introduced in the <a href="#user-guide-debugging-callbacks">previous section</a>:</p><pre><code class="language-julia hljs">result = infer(
+    model = iid_normal_with_pipeline(),
+    data  = (y = dataset, ),
+    constraints = MeanField(),
+    iterations = 5,
+    initialization = init,
+    returnvars = KeepLast(),
+    callbacks = (
+        on_marginal_update = on_marginal_update_callback,
+        before_iteration   = before_iteration_callback,
+        after_iteration    = after_iteration_callback
+    )
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Starting iteration 1
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+Latent variable γ has been updated. Estimated mean is 1.3999999999842608e-12 with standard deviation 7.483314773463754e-13
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+Latent variable μ has been updated. Estimated mean is 2.298693811666267e-9 with standard deviation 9.9999999965
+Iteration 1 has been finished
+Starting iteration 2
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+Latent variable γ has been updated. Estimated mean is 0.012585164115914349 with standard deviation 0.006727053182581895
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+Latent variable μ has been updated. Estimated mean is 2.833548496140939 with standard deviation 3.703047967217442
+Iteration 2 has been finished
+Starting iteration 3
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+Latent variable γ has been updated. Estimated mean is 0.09739965327685064 with standard deviation 0.05206230459322128
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+Latent variable μ has been updated. Estimated mean is 3.2177746677070247 with standard deviation 1.4184778648479606
+Iteration 3 has been finished
+Starting iteration 4
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+Latent variable γ has been updated. Estimated mean is 0.5656842639728278 with standard deviation 0.30237095783938733
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+Latent variable μ has been updated. Estimated mean is 3.2722790275204816 with standard deviation 0.5935558229422718
+Iteration 4 has been finished
+Starting iteration 5
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][τ]: DeferredMessage([ use `as_message` to compute the message ])
+Latent variable γ has been updated. Estimated mean is 1.726527858112436 with standard deviation 0.9228679591110553
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+[Log][NormalMeanPrecision][μ]: DeferredMessage([ use `as_message` to compute the message ])
+Latent variable μ has been updated. Estimated mean is 3.280048715037061 with standard deviation 0.3401549585334766
+Iteration 5 has been finished</code></pre><p>We can see the order of message update events. Note that <code>ReactiveMP</code> may decide to compute messages lazily, in which case the actual computation of the value of a message will be deffered until later moment. In this case, <code>LoggerPipelineStage</code> will report <em>DefferedMessage</em>.</p><script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+mermaid.initialize({
+    startOnLoad: true,
+    theme: "neutral"
+});
+</script></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../customization/postprocess/">« Inference results postprocessing</a><a class="docs-footer-nextpage" href="../migration-guide-v2-v3/">Migration from v2 to v3 »</a><div class="flexbox-break"></div><p class="footer-message">Created in <a href="https://biaslab.github.io/">BIASlab</a>, maintained by <a href="https://github.com/ReactiveBayes">ReactiveBayes</a>, powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.0 on <span class="colophon-date" title="Friday 17 January 2025 21:02">Friday 17 January 2025</span>. Using Julia version 1.10.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

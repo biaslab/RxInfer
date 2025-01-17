@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Streamline inference · RxInfer.jl</title><meta name="title" content="Streamline inference · RxInfer.jl"/><meta property="og:title" content="Streamline inference · RxInfer.jl"/><meta property="twitter:title" content="Streamline inference · RxInfer.jl"/><meta name="description" content="Julia package for automated Bayesian inference on a factor graph with reactive message passing"/><meta property="og:description" content="Julia package for automated Bayesian inference on a factor graph with reactive message passing"/><meta property="twitter:description" content="Julia package for automated Bayesian inference on a factor graph with reactive message passing"/><meta property="og:url" content="https://reactivebayes.github.io/RxInfer.jl/manuals/inference/streamlined/"/><meta property="twitter:url" content="https://reactivebayes.github.io/RxInfer.jl/manuals/inference/streamlined/"/><link rel="canonical" href="https://reactivebayes.github.io/RxInfer.jl/manuals/inference/streamlined/"/><script data-outdated-warner src="../../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../../assets/documenter.js"></script><script src="../../../search_index.js"></script><script src="../../../siteinfo.js"></script><script src="../../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../../assets/themeswap.js"></script><link href="../../../assets/theme.css" rel="stylesheet" type="text/css"/><link href="../../../assets/header.css" rel="stylesheet" type="text/css"/><script src="../../../assets/header.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../../"><img class="docs-light-only" src="../../../assets/logo.svg" alt="RxInfer.jl logo"/><img class="docs-dark-only" src="../../../assets/logo-dark.svg" alt="RxInfer.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../../../">RxInfer.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../../">Home</a></li><li><span class="tocitem">User guide</span><ul><li><a class="tocitem" href="../../getting-started/">Getting started</a></li><li><a class="tocitem" href="../../comparison/">RxInfer.jl vs. Others</a></li><li><a class="tocitem" href="../../model-specification/">Model specification</a></li><li><a class="tocitem" href="../../constraints-specification/">Constraints specification</a></li><li><a class="tocitem" href="../../meta-specification/">Meta specification</a></li><li><input class="collapse-toggle" id="menuitem-2-6" type="checkbox" checked/><label class="tocitem" for="menuitem-2-6"><span class="docs-label">Inference specification</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../overview/">Overview</a></li><li><a class="tocitem" href="../static/">Static inference</a></li><li class="is-active"><a class="tocitem" href>Streamline inference</a><ul class="internal"><li><a class="tocitem" href="#manual-online-inference-model-spec"><span>Model specification</span></a></li><li><a class="tocitem" href="#manual-online-inference-autoupdates"><span>Automatic prior update</span></a></li><li><a class="tocitem" href="#manual-online-inference-async-datastream"><span>Asynchronous data stream of observations</span></a></li><li><a class="tocitem" href="#manual-online-inference-inst-reactive-engine"><span>Instantiating the reactive inference engine</span></a></li><li><a class="tocitem" href="#manual-online-inference-history"><span>Keeping the history of posteriors</span></a></li><li><a class="tocitem" href="#manual-online-inference-free-energy"><span>Subscribing on the stream of free energy</span></a></li><li><a class="tocitem" href="#manual-online-inference-callbacks"><span>Callbacks</span></a></li><li><a class="tocitem" href="#manual-online-inference-event-loop"><span>Event loop</span></a></li><li><a class="tocitem" href="#manual-online-inference-data"><span>Using <code>data</code> keyword argument with streaming inference</span></a></li><li><a class="tocitem" href="#manual-online-inference-where-to-go"><span>Where to go next?</span></a></li></ul></li><li><a class="tocitem" href="../initialization/">Initialization</a></li><li><a class="tocitem" href="../autoupdates/">Auto-updates</a></li><li><a class="tocitem" href="../delta-node/">Deterministic nodes</a></li><li><a class="tocitem" href="../nonconjugate/">Non-conjugate inference</a></li><li><a class="tocitem" href="../undefinedrules/">Undefined message update rules</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-2-7" type="checkbox"/><label class="tocitem" for="menuitem-2-7"><span class="docs-label">Inference customization</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../customization/custom-node/">Defining a custom node and rules</a></li><li><a class="tocitem" href="../../customization/postprocess/">Inference results postprocessing</a></li></ul></li><li><a class="tocitem" href="../../debugging/">Debugging</a></li><li><a class="tocitem" href="../../migration-guide-v2-v3/">Migration from v2 to v3</a></li><li><input class="collapse-toggle" id="menuitem-2-10" type="checkbox"/><label class="tocitem" for="menuitem-2-10"><span class="docs-label">Sharp bits of RxInfer</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../sharpbits/overview/">Overview</a></li><li><a class="tocitem" href="../../sharpbits/rule-not-found/">Rule Not Found Error</a></li><li><a class="tocitem" href="../../sharpbits/stack-overflow-inference/">Stack Overflow in Message Computations</a></li><li><a class="tocitem" href="../../sharpbits/usage-colon-equality/">Using <code>=</code> instead of <code>:=</code> for deterministic nodes</a></li></ul></li></ul></li><li><span class="tocitem">Library</span><ul><li><a class="tocitem" href="../../../library/model-construction/">Model construction</a></li><li><a class="tocitem" href="../../../library/bethe-free-energy/">Bethe Free Energy</a></li><li><a class="tocitem" href="../../../library/functional-forms/">Functional form constraints</a></li><li><a class="tocitem" href="../../../library/exported-methods/">Exported methods</a></li></ul></li><li><a class="tocitem" href="../../../examples/overview/">Examples</a></li><li><span class="tocitem">Contributing</span><ul><li><a class="tocitem" href="../../../contributing/guide/">Contribution guide</a></li><li><a class="tocitem" href="../../../contributing/guidelines/">Contribution guidelines</a></li><li><a class="tocitem" href="../../../contributing/new-documentation/">Contributing to the documentation</a></li><li><a class="tocitem" href="../../../contributing/new-example/">Contributing to the examples</a></li><li><a class="tocitem" href="../../../contributing/new-release/">Publishing a new release</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">User guide</a></li><li><a class="is-disabled">Inference specification</a></li><li class="is-active"><a href>Streamline inference</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Streamline inference</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/ReactiveBayes/RxInfer.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/ReactiveBayes/RxInfer.jl/blob/main/docs/src/manuals/inference/streamlined.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="manual-online-inference"><a class="docs-heading-anchor" href="#manual-online-inference">Streaming (online) inference</a><a id="manual-online-inference-1"></a><a class="docs-heading-anchor-permalink" href="#manual-online-inference" title="Permalink"></a></h1><p>This guide explains how to use the <a href="../overview/#RxInfer.infer"><code>infer</code></a> function for dynamic datasets. We show how <code>RxInfer</code> can continuously update beliefs asynchronously whenever a new observation arrives. We use a simple Beta-Bernoulli model as an example, which has been covered in the <a href="../../getting-started/#user-guide-getting-started">Getting Started</a> section,  however, these techniques can be applied to any model</p><p>Also read about <a href="../static/#manual-static-inference">Static Inference</a> or checkout more complex <a href="https://reactivebayes.github.io/RxInfer.jl/stable/examples/overview/">examples</a>.</p><h2 id="manual-online-inference-model-spec"><a class="docs-heading-anchor" href="#manual-online-inference-model-spec">Model specification</a><a id="manual-online-inference-model-spec-1"></a><a class="docs-heading-anchor-permalink" href="#manual-online-inference-model-spec" title="Permalink"></a></h2><p>Also read the <a href="../../model-specification/#user-guide-model-specification">Model Specification</a> section.</p><p>In online inference, we want to continuously update our prior beliefs about certain hidden states.  To achieve this, we include extra arguments in our model specification to allow for dynamic prior changes:</p><pre><code class="language-julia hljs">using RxInfer
+
+@model function beta_bernoulli_online(y, a, b)
+    θ ~ Beta(a, b)
+    y ~ Bernoulli(θ)
+end</code></pre><p>In this model, we assume we only have one observation y at a time, and the <code>a</code> and <code>b</code> parameters are not fixed to specific values but rather are arguments of the model itself.</p><h2 id="manual-online-inference-autoupdates"><a class="docs-heading-anchor" href="#manual-online-inference-autoupdates">Automatic prior update</a><a id="manual-online-inference-autoupdates-1"></a><a class="docs-heading-anchor-permalink" href="#manual-online-inference-autoupdates" title="Permalink"></a></h2><p>Next, we want to enable <code>RxInfer</code> to automatically update the <code>a</code> and <code>b</code> parameters as soon as a new posterior for <code>θ</code> is available. To accomplish this, we utilize the <a href="../autoupdates/#RxInfer.@autoupdates"><code>@autoupdates</code></a> macro.</p><pre><code class="language-julia hljs">beta_bernoulli_autoupdates = @autoupdates begin
+    # We want to update `a` and `b` to be equal to the parameters
+    # of the current posterior for `θ`
+    a, b = params(q(θ))
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">@autoupdates begin
+    (a, b) = params(q(θ))
+end
+</code></pre><p>This specification instructs <code>RxInfer</code> to update <code>a</code> and <code>b</code> parameters automatically as as soon as a new posterior for <code>θ</code> is available. Read more about <code>@autoupdates</code> in the <a href="../autoupdates/#autoupdates-guide">Autoupdates guide</a></p><h2 id="manual-online-inference-async-datastream"><a class="docs-heading-anchor" href="#manual-online-inference-async-datastream">Asynchronous data stream of observations</a><a id="manual-online-inference-async-datastream-1"></a><a class="docs-heading-anchor-permalink" href="#manual-online-inference-async-datastream" title="Permalink"></a></h2><p>For demonstration purposes, we use a handcrafted stream of observations with the <code>Rocket.jl</code> library</p><pre><code class="language-julia hljs">using Rocket, Distributions, StableRNGs
+
+hidden_θ     = 1 / 3.1415
+distribution = Bernoulli(hidden_θ)
+rng          = StableRNG(43)
+datastream   = RecentSubject(Bool)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">RecentSubject(Bool, Subject{Bool, AsapScheduler, AsapScheduler})</code></pre><p>The <a href="../overview/#RxInfer.infer"><code>infer</code></a> function expects the <code>datastream</code> to emit values in the form of the <code>NamedTuple</code>s. To simplify this process, <code>Rocket.jl</code> exports <code>labeled</code> function. We also use the <code>combineLatest</code> function to convert a stream of <code>Bool</code>s to a stream of <code>Tuple{Bool}</code>s. Read more about these function in the <a href="https://reactivebayes.github.io/Rocket.jl/stable/">documentation to <code>Rocket.jl</code></a>.</p><pre><code class="language-julia hljs">observations = labeled(Val((:y, )), combineLatest(datastream))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">LabeledObservable(@NamedTuple{y::Bool}, Rocket.CombineLatestObservable{Tuple{Bool}, Tuple{Rocket.RecentSubjectInstance{Bool, Subject{Bool, AsapScheduler, AsapScheduler}}}, PushEach})</code></pre><p>Let&#39;s verify that our datastream does indeed produce <code>NamedTuple</code>s</p><pre><code class="language-julia hljs">subscription = subscribe!(observations,
+    (new_observation) -&gt; println(&quot;Got new observation &quot;, new_observation, &quot; 🎉&quot;)
+)</code></pre><pre><code class="language-julia hljs">for i in 1:5
+    next!(datastream, rand(rng, distribution))
+end
+@test all(value -&gt; haskey(value, :y) &amp;&amp; (isone(value[:y]) || iszero(value[:y])), test_values) #hide</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Got new observation (y = false,) 🎉
+Got new observation (y = true,) 🎉
+Got new observation (y = false,) 🎉
+Got new observation (y = true,) 🎉
+Got new observation (y = false,) 🎉</code></pre><p>Nice! Our data stream produces events in a form of the <code>NamedTuple</code>s, which is compatible with the <a href="../overview/#RxInfer.infer"><code>infer</code></a> function.</p><pre><code class="language-julia hljs"># It is important to keep track of the existing susbcriptions
+# and unsubscribe to reduce the usage of computational resources
+unsubscribe!(subscription)</code></pre><h2 id="manual-online-inference-inst-reactive-engine"><a class="docs-heading-anchor" href="#manual-online-inference-inst-reactive-engine">Instantiating the reactive inference engine</a><a id="manual-online-inference-inst-reactive-engine-1"></a><a class="docs-heading-anchor-permalink" href="#manual-online-inference-inst-reactive-engine" title="Permalink"></a></h2><p>Now, we have everything ready to start running the inference with <code>RxInfer</code> on dynamic datasets with the <a href="../overview/#RxInfer.infer"><code>infer</code></a> function:</p><pre><code class="language-julia hljs">engine = infer(
+    model          = beta_bernoulli_online(),
+    datastream     = observations,
+    autoupdates    = beta_bernoulli_autoupdates,
+    returnvars     = (:θ, ),
+    initialization = @initialization(q(θ) = Beta(1, 1)),
+    autostart      = false
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">RxInferenceEngine:
+  Posteriors stream    | enabled for (θ)
+  Free Energy stream   | disabled
+  Posteriors history   | unavailable
+  Free Energy history  | unavailable
+  Enabled events       | [  ]</code></pre><p>In the code above, there are several notable differences compared to running inference for static datasets. Firstly, we utilized the <code>autoupdates</code> argument as discussed <a href="#manual-online-inference-autoupdates">previously</a>. Secondly, we employed the <a href="../initialization/#RxInfer.@initialization"><code>@initialization</code></a> macro to initialize the posterior over <code>θ</code>. This is necessary for the <code>@autoupdates</code> macro, as it needs to initialize the <code>a</code> and <code>b</code> parameters before the data becomes available. Thirdly, we set <code>autostart = false</code> to indicate that we do not want to immediately subscribe to the datastream, but rather do so manually later using the <a href="#RxInfer.start"><code>RxInfer.start</code></a> function. The <code>returnvars</code> specification differs a little from <a href="../static/#manual-static-inference">Static Inference</a>. In reactive inference, the <code>returnvars = (:θ, )</code> must be a tuple of <code>Symbol</code>s and specifies that we would be interested to get a stream of posteriors update for <code>θ</code>. The <code>returnvars</code> specification is optional and the inference engine will create reactive streams for all latent states if ommited.</p><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="RxInfer.RxInferenceEngine" href="#RxInfer.RxInferenceEngine"><code>RxInfer.RxInferenceEngine</code></a> — <span class="docstring-category">Type</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">RxInferenceEngine</code></pre><p>The return value of the <code>infer</code> function in case of streamlined inference. </p><p><strong>Public fields</strong></p><ul><li><code>posteriors</code>: <code>Dict</code> or <code>NamedTuple</code> of &#39;random variable&#39; - &#39;posterior stream&#39; pairs. See the <code>returnvars</code> argument for the <a href="../overview/#RxInfer.infer"><code>infer</code></a>.</li><li><code>free_energy</code>: (optional) A stream of Bethe Free Energy values per VMP iteration. See the <code>free_energy</code> argument for the <a href="../overview/#RxInfer.infer"><code>infer</code></a>.</li><li><code>history</code>: (optional) Saves history of previous marginal updates. See the <code>historyvars</code> and <code>keephistory</code> arguments for the <a href="../overview/#RxInfer.infer"><code>infer</code></a>.</li><li><code>free_energy_history</code>: (optional) Free energy history, averaged across variational iterations value for all observations  </li><li><code>free_energy_raw_history</code>: (optional) Free energy history, returns returns computed values of all variational iterations for each data event (if available)</li><li><code>free_energy_final_only_history</code>: (optional) Free energy history, returns computed values of final variational iteration for each data event (if available)</li><li><code>events</code>: (optional) A stream of events send by the inference engine. See the <code>events</code> argument for the <a href="../overview/#RxInfer.infer"><code>infer</code></a>.</li><li><code>model</code>: <code>ProbabilisticModel</code> object reference.</li></ul><p>Use the <code>RxInfer.start(engine)</code> function to subscribe on the <code>datastream</code> source and start the inference procedure.  Use <code>RxInfer.stop(engine)</code> to unsubscribe from the <code>datastream</code> source and stop the inference procedure.  Note, that it is not always possible to start/stop the inference procedure.</p><p>See also: <a href="../overview/#RxInfer.infer"><code>infer</code></a>, <a href="#RxInfer.RxInferenceEvent"><code>RxInferenceEvent</code></a>, <a href="#RxInfer.start"><code>RxInfer.start</code></a>, <a href="#RxInfer.stop"><code>RxInfer.stop</code></a></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/ReactiveBayes/RxInfer.jl/blob/cb1c6142227c4a91eb2a9ab9c9354a9994d4b351/src/inference/streaming.jl#L3-L23">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="RxInfer.start" href="#RxInfer.start"><code>RxInfer.start</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">start(engine::RxInferenceEngine)</code></pre><p>Starts the <code>RxInferenceEngine</code> by subscribing to the data source, instantiating free energy (if enabled) and starting the event loop. Use <a href="#RxInfer.stop"><code>RxInfer.stop</code></a> to stop the <code>RxInferenceEngine</code>. Note that it is not always possible to stop/restart the engine and this depends on the data source type.</p><p>See also: <a href="#RxInfer.stop"><code>RxInfer.stop</code></a></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/ReactiveBayes/RxInfer.jl/blob/cb1c6142227c4a91eb2a9ab9c9354a9994d4b351/src/inference/streaming.jl#L173-L180">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="RxInfer.stop" href="#RxInfer.stop"><code>RxInfer.stop</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">stop(engine::RxInferenceEngine)</code></pre><p>Stops the <code>RxInferenceEngine</code> by unsubscribing to the data source, free energy (if enabled) and stopping the event loop. Use <a href="#RxInfer.start"><code>RxInfer.start</code></a> to start the <code>RxInferenceEngine</code> again. Note that it is not always possible to stop/restart the engine and this depends on the data source type.</p><p>See also: <a href="#RxInfer.start"><code>RxInfer.start</code></a></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/ReactiveBayes/RxInfer.jl/blob/cb1c6142227c4a91eb2a9ab9c9354a9994d4b351/src/inference/streaming.jl#L229-L236">source</a></section></article><p>Given the <code>engine</code>, we now can subscribe on the posterior updates:</p><pre><code class="language-julia hljs">θ_updates_subscription = subscribe!(engine.posteriors[:θ],
+    (new_posterior_for_θ) -&gt; println(&quot;A new posterior for θ is &quot;, new_posterior_for_θ, &quot; 🤩&quot;)
+)</code></pre><p>In this setting, we should get a message every time a new posterior is available for <code>θ</code>. Let&#39;s try to generate a new observation!</p><pre><code class="language-julia hljs">next!(datastream, rand(rng, distribution))</code></pre><p>Hmm, nothing happened...? Oh, we forgot to <em>start</em> the engine with the <a href="#RxInfer.start"><code>RxInfer.start</code></a> function. Let&#39;s do that now:</p><pre><code class="language-julia hljs">RxInfer.start(engine)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">A new posterior for θ is Beta{Float64}(α=1.0, β=2.0) 🤩</code></pre><p>Ah, as soon as we start our engine, we receive the posterior for <code>θ</code>. This occurred because we initialized our stream as <code>RecentSubject</code>, which retains the most recent value and emits it upon subscription. Our engine automatically subscribed to the observations and obtained the most recent value, initiating inference. Let&#39;s see if we can add more observations:</p><pre><code class="language-julia hljs">next!(datastream, rand(rng, distribution))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">A new posterior for θ is Beta{Float64}(α=1.0, β=3.0) 🤩</code></pre><p>Great! We got another posterior! Let&#39;s try a few more observations:</p><pre><code class="language-julia hljs">for i in 1:5
+    next!(datastream, rand(rng, distribution))
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">A new posterior for θ is Beta{Float64}(α=2.0, β=3.0) 🤩
+A new posterior for θ is Beta{Float64}(α=2.0, β=4.0) 🤩
+A new posterior for θ is Beta{Float64}(α=2.0, β=5.0) 🤩
+A new posterior for θ is Beta{Float64}(α=2.0, β=6.0) 🤩
+A new posterior for θ is Beta{Float64}(α=2.0, β=7.0) 🤩</code></pre><p>As demonstrated, the reactive engine reacts to new observations and performs inference as soon as a new observation is available. But what if we want to maintain a history of posteriors? The <a href="../overview/#RxInfer.infer"><code>infer</code></a> function supports the <code>historyvars</code> and <code>keephistory</code> arguments precisely for that purpose. In the next section we reinstantiate our engine, with the <code>keephistory</code> argument enabled, but first, we must shutdown the previous engine and unsubscribe from its posteriors:</p><pre><code class="language-julia hljs">RxInfer.stop(engine)
+unsubscribe!(θ_updates_subscription)</code></pre><h2 id="manual-online-inference-history"><a class="docs-heading-anchor" href="#manual-online-inference-history">Keeping the history of posteriors</a><a id="manual-online-inference-history-1"></a><a class="docs-heading-anchor-permalink" href="#manual-online-inference-history" title="Permalink"></a></h2><p>To retain the history of posteriors within the engine, we can utilize the <code>keephistory</code> and <code>historyvars</code> arguments. The <code>keephistory</code> parameter specifies the length of the circular buffer for storing the history of posterior updates, while <code>historyvars</code> determines what variables to save in the history and how often to save them (e.g., every iteration or only at the end of iterations).</p><pre><code class="language-julia hljs">engine = infer(
+    model          = beta_bernoulli_online(),
+    datastream     = observations,
+    autoupdates    = beta_bernoulli_autoupdates,
+    initialization = @initialization(q(θ) = Beta(1, 1)),
+    keephistory    = 100,
+    historyvars    = (θ = KeepLast(), ),
+    autostart      = true
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">RxInferenceEngine:
+  Posteriors stream    | enabled for (θ)
+  Free Energy stream   | disabled
+  Posteriors history   | available for (θ)
+  Free Energy history  | unavailable
+  Enabled events       | [  ]</code></pre><p>In the example above, we specified that we want to store at most <code>100</code> posteriors for <code>θ</code>, and <code>KeepLast()</code> indicates that we are only interested in the final value of <code>θ</code> and not in intermediate values during variational iterations. We also specified the <code>autostart = true</code> to start the engine automatically without need for <a href="#RxInfer.start"><code>RxInfer.start</code></a> and <a href="#RxInfer.stop"><code>RxInfer.stop</code></a>.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>In this model, we do not utilize the <code>iterations</code> argument, indicating that we perform a single VMP iteration. If multiple iterations were employed, <code>engine.posteriors[:θ]</code> would emit every intermediate value.</p></div></div><p>Now, we can feed some more observations to the datastream:</p><pre><code class="language-julia hljs">for i in 1:5
+    next!(datastream, rand(rng, distribution))
+end</code></pre><p>And inspect the <code>engine.history[:θ]</code> buffer:</p><pre><code class="language-julia hljs">engine.history[:θ]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">6-element DataStructures.CircularBuffer{Any}:
+ Beta{Float64}(α=1.0, β=2.0)
+ Beta{Float64}(α=2.0, β=2.0)
+ Beta{Float64}(α=3.0, β=2.0)
+ Beta{Float64}(α=3.0, β=3.0)
+ Beta{Float64}(α=3.0, β=4.0)
+ Beta{Float64}(α=3.0, β=5.0)</code></pre><p>As we can see the buffer correctly saved the posteriors in the <code>.history</code> buffer.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>We have <code>6</code> entries, despite having only <code>5</code> new observations. As mentioned earlier, this occurs because we initialized our datastream as a <code>RecentSubject</code>, which retains the most recent observation and emits it each time a new subscription occurs.</p></div></div><h3 id="manual-online-inference-history-visualization"><a class="docs-heading-anchor" href="#manual-online-inference-history-visualization">Visualizing the history of posterior estimation</a><a id="manual-online-inference-history-visualization-1"></a><a class="docs-heading-anchor-permalink" href="#manual-online-inference-history-visualization" title="Permalink"></a></h3><p>Let&#39;s feed more observation and visualize how the posterior changes over time:</p><pre><code class="language-julia hljs">for i in 1:94
+    next!(datastream, rand(rng, distribution))
+end</code></pre><p>To visualize the history of posteriors we use the <code>@gif</code> macro from the <code>Plots</code> package:</p><pre><code class="language-julia hljs">using Plots
+
+@gif for posterior in engine.history[:θ]
+    rθ = range(0, 1, length = 1000)
+    pθ = plot(rθ, (x) -&gt; pdf(posterior, x), fillalpha=0.3, fillrange = 0, label=&quot;P(θ|y)&quot;, c=3)
+    pθ = vline!(pθ, [ hidden_θ ], label = &quot;Real value of θ&quot;)
+
+    plot(pθ)
+end</code></pre><img src="909be574.gif" alt="Example block output"/><p>We can keep feeding data to our datastream, but only last <code>100</code> posteriors will be saved in the <code>history</code> buffer:</p><pre><code class="language-julia hljs">for i in 1:200
+    next!(datastream, rand(rng, distribution))
+end
+
+@gif for posterior in engine.history[:θ]
+    rθ = range(0, 1, length = 1000)
+    pθ = plot(rθ, (x) -&gt; pdf(posterior, x), fillalpha=0.3, fillrange = 0, label=&quot;P(θ|y)&quot;, c=3)
+    pθ = vline!(pθ, [ hidden_θ ], label = &quot;Real value of θ&quot;)
+
+    plot(pθ)
+end</code></pre><img src="d4876b65.gif" alt="Example block output"/><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>It is also possible to visualize the inference estimation continously with manual subscription to <code>engine.posteriors[:θ]</code>.</p></div></div><p>As previously it is important to shutdown the inference engine when it becomes unnecessary:</p><pre><code class="language-julia hljs">RxInfer.stop(engine)</code></pre><h2 id="manual-online-inference-free-energy"><a class="docs-heading-anchor" href="#manual-online-inference-free-energy">Subscribing on the stream of free energy</a><a id="manual-online-inference-free-energy-1"></a><a class="docs-heading-anchor-permalink" href="#manual-online-inference-free-energy" title="Permalink"></a></h2><p>To obtain a continuous stream of updates for the <a href="../../../library/bethe-free-energy/#lib-bethe-free-energy">Bethe Free Energy</a>, we need to initialize the engine with the <code>free_energy</code> argument set to <code>true</code>:</p><pre><code class="language-julia hljs">engine = infer(
+    model          = beta_bernoulli_online(),
+    datastream     = observations,
+    autoupdates    = beta_bernoulli_autoupdates,
+    initialization = @initialization(q(θ) = Beta(1, 1)),
+    keephistory    = 5,
+    autostart      = true,
+    free_energy    = true
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">RxInferenceEngine:
+  Posteriors stream    | enabled for (θ)
+  Free Energy stream   | enabled
+  Posteriors history   | available for (θ)
+  Free Energy history  | available
+  Enabled events       | [  ]</code></pre><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>It&#39;s important to use the <code>keephistory</code> argument alongside the <code>free_energy</code> argument because setting <code>free_energy = true</code> also maintains an internal circular buffer to track its previous updates.</p></div></div><pre><code class="language-julia hljs">free_energy_subscription = subscribe!(engine.free_energy,
+    (bfe_value) -&gt; println(&quot;New value of Bethe Free Energy has been computed &quot;, bfe_value, &quot; 👩‍🔬&quot;)
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">New value of Bethe Free Energy has been computed 0.6931471805599452 👩‍🔬</code></pre><p>Let&#39;s emit more observations:</p><pre><code class="language-julia hljs">for i in 1:5
+    next!(datastream, rand(rng, distribution))
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">New value of Bethe Free Energy has been computed 0.4054651081081643 👩‍🔬
+New value of Bethe Free Energy has been computed 0.28768207245178123 👩‍🔬
+New value of Bethe Free Energy has been computed 1.6094379124340998 👩‍🔬
+New value of Bethe Free Energy has been computed 1.0986122886681102 👩‍🔬
+New value of Bethe Free Energy has been computed 0.5596157879354218 👩‍🔬</code></pre><p>In this particular example, we do not perform any variational iterations and do not use any variational constraints, hence, the inference is exact. In this case the BFE values are equal to the minus log-evidence of the model given new observation.  We can also track history of Bethe Free Energy values with the following fields of the <code>engine</code>:</p><ul><li><code>free_energy_history</code>: free energy history, averaged across variational iterations value for all observations  </li><li><code>free_energy_raw_history</code>: free energy history, returns returns computed values of all variational iterations for each data event (if available)</li><li><code>free_energy_final_only_history</code>: free energy history, returns computed values of final variational iteration for each data event (if available)</li></ul><pre><code class="language-julia hljs">engine.free_energy_history</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1-element Vector{Real}:
+ 0.7921626339195154</code></pre><pre><code class="language-julia hljs">engine.free_energy_raw_history</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">5-element Vector{Real}:
+ 0.4054651081081643
+ 0.28768207245178123
+ 1.6094379124340998
+ 1.0986122886681102
+ 0.5596157879354218</code></pre><pre><code class="language-julia hljs">engine.free_energy_final_only_history</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">5-element Vector{Real}:
+ 0.4054651081081643
+ 0.28768207245178123
+ 1.6094379124340998
+ 1.0986122886681102
+ 0.5596157879354218</code></pre><pre><code class="language-julia hljs"># Stop the engine when not needed as usual
+RxInfer.stop(engine)
+unsubscribe!(free_energy_subscription)</code></pre><p>As has been mentioned, in this particular example we do not perform variational iterations, hence, there is little different between different representations of the BFE history buffers. However, when performing variational inference with the <code>iterations</code> argument, those buffers will be different. To demonstrate this difference let&#39;s build a slightly more complex model with variational constraints:</p><pre><code class="language-julia hljs">@model function iid_normal(y, mean_μ, var_μ, shape_τ, rate_τ)
+    μ ~ Normal(mean = mean_μ, var = var_μ)
+    τ ~ Gamma(shape = shape_τ, rate = rate_τ)
+    y ~ Normal(mean = μ, precision = τ)
+end
+
+iid_normal_constraints = @constraints begin
+    q(μ, τ) = q(μ)q(τ)
+end
+
+iid_normal_autoupdates = @autoupdates begin
+    mean_μ  = mean(q(μ))
+    var_μ   = var(q(μ))
+    shape_τ = shape(q(τ))
+    rate_τ  = rate(q(τ))
+end
+
+iid_normal_hidden_μ       = 3.1415
+iid_normal_hidden_τ       = 0.0271
+iid_normal_distribution   = NormalMeanPrecision(iid_normal_hidden_μ, iid_normal_hidden_τ)
+iid_normal_rng            = StableRNG(123)
+iid_normal_datastream     = RecentSubject(Float64)
+iid_normal_observations   = labeled(Val((:y, )), combineLatest(iid_normal_datastream))
+iid_normal_initialization = @initialization begin
+    q(μ) = NormalMeanPrecision(0.0, 0.001)
+    q(τ) = GammaShapeRate(10.0, 10.0)
+end
+
+iid_normal_engine  = infer(
+    model          = iid_normal(),
+    datastream     = iid_normal_observations,
+    autoupdates    = iid_normal_autoupdates,
+    constraints    = iid_normal_constraints,
+    initialization = iid_normal_initialization,
+    historyvars    = (
+        μ = KeepLast(),
+        τ = KeepLast(),
+    ),
+    keephistory    = 100,
+    iterations     = 10,
+    free_energy    = true,
+    autostart      = true
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">RxInferenceEngine:
+  Posteriors stream    | enabled for (μ, τ)
+  Free Energy stream   | enabled
+  Posteriors history   | available for (μ, τ)
+  Free Energy history  | available
+  Enabled events       | [  ]</code></pre><p>The notable differences with the previous example is the use of the <code>constraints</code> and <code>iterations</code> arguments. Read more about constraints in the <a href="../../constraints-specification/#user-guide-constraints-specification">Constraints Specification</a> section of the documentation. We have also indicated in the <code>historyvars</code> that we want to keep track of posteriors only from the last variational iteration in the history buffer.</p><p>Now we can feed some observations to the datastream:</p><pre><code class="language-julia hljs">for i in 1:100
+    next!(iid_normal_datastream, rand(iid_normal_rng, iid_normal_distribution))
+end</code></pre><p>Let&#39;s inspect the differences in the <code>free_energy</code> buffers:</p><pre><code class="language-julia hljs">iid_normal_engine.free_energy_history</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">10-element Vector{Real}:
+ 3.6043166919134983
+ 3.583392877186756
+ 3.5826032453113443
+ 3.5825781243744648
+ 3.5825773364749796
+ 3.5825773108212466
+ 3.582577309930648
+ 3.5825773098970286
+ 3.582577309895637
+ 3.5825773098955747</code></pre><pre><code class="language-julia hljs">iid_normal_engine.free_energy_raw_history</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1000-element Vector{Real}:
+ 4.400915492231585
+ 4.400915491646703
+ 4.400915491645383
+ 4.400915491645376
+ 4.400915491645378
+ 4.40091549164538
+ 4.400915491645378
+ 4.400915491645379
+ 4.400915491645382
+ 4.400915491645381
+ ⋮
+ 3.3459102809749774
+ 3.345910280974934
+ 3.3459102809749397
+ 3.3459102809749406
+ 3.3459102809749406
+ 3.3459102809749406
+ 3.3459102809749406
+ 3.3459102809749406
+ 3.3459102809749406</code></pre><pre><code class="language-julia hljs">iid_normal_engine.free_energy_final_only_history</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">100-element Vector{Real}:
+  4.400915491645381
+  6.750221908665356
+ 15.238854420361326
+  1.732109425738347
+  1.708353615319435
+  5.532943388368783
+  3.7219642469057916
+  3.5831347993392586
+  4.483661427185016
+  6.051352052233973
+  ⋮
+  3.0121619504111528
+  3.2849460863247915
+  2.794188080870387
+  4.190015761850561
+  3.2727955937808066
+  5.350758196381457
+  2.7547733362534608
+  2.7673806065614217
+  3.3459102809749406</code></pre><p>We can also visualize different representations:</p><pre><code class="language-julia hljs">plot(iid_normal_engine.free_energy_history, label = &quot;Bethe Free Energy (averaged)&quot;)</code></pre><img src="67c7e893.svg" alt="Example block output"/><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>In general, the <em>averaged</em> Bethe Free Energy values must decrease and converge to a stable point.</p></div></div><pre><code class="language-julia hljs">plot(iid_normal_engine.free_energy_raw_history, label = &quot;Bethe Free Energy (raw)&quot;)</code></pre><img src="f540d0ba.svg" alt="Example block output"/><pre><code class="language-julia hljs">plot(iid_normal_engine.free_energy_final_only_history, label = &quot;Bethe Free Energy (last per observation)&quot;)</code></pre><img src="906f85e4.svg" alt="Example block output"/><p>As we can see, in the case of the variational iterations those buffers are quite different and represent different representations of the same Bethe Free Energy stream (which corresponds to the <code>.free_energy_raw_history</code>). As a sanity check, we could also visualize the history of our posterior estimations in the same way  as we did for a simpler previous example:</p><pre><code class="language-julia hljs">@gif for (μ_posterior, τ_posterior) in zip(iid_normal_engine.history[:μ], iid_normal_engine.history[:τ])
+    rμ = range(0, 10, length = 1000)
+    rτ = range(0, 1, length = 1000)
+
+    pμ = plot(rμ, (x) -&gt; pdf(μ_posterior, x), fillalpha=0.3, fillrange = 0, label=&quot;P(μ|y)&quot;, c=3)
+    pμ = vline!(pμ, [ iid_normal_hidden_μ ], label = &quot;Real value of μ&quot;)
+
+    pτ = plot(rτ, (x) -&gt; pdf(τ_posterior, x), fillalpha=0.3, fillrange = 0, label=&quot;P(τ|y)&quot;, c=3)
+    pτ = vline!(pτ, [ iid_normal_hidden_τ ], label = &quot;Real value of τ&quot;)
+
+    plot(pμ, pτ, layout = @layout([ a; b ]))
+end</code></pre><img src="f143f2cb.gif" alt="Example block output"/><p>Nice, the history of the estimated posteriors aligns well with the real (hidden) values of the underlying parameters.</p><h2 id="manual-online-inference-callbacks"><a class="docs-heading-anchor" href="#manual-online-inference-callbacks">Callbacks</a><a id="manual-online-inference-callbacks-1"></a><a class="docs-heading-anchor-permalink" href="#manual-online-inference-callbacks" title="Permalink"></a></h2><p>The <a href="#RxInfer.RxInferenceEngine"><code>RxInferenceEngine</code></a> has its own lifecycle. The callbacks differ a little bit from <a href="../static/#manual-static-inference-callbacks">Using callbacks with Static Inference</a>.  Here are available callbacks that can be used together with the streaming inference:</p><hr/><pre><code class="language-julia hljs">before_model_creation()</code></pre><p>Calls before the model is going to be created, does not accept any arguments.</p><pre><code class="language-julia hljs">after_model_creation(model::ProbabilisticModel)</code></pre><p>Calls right after the model has been created, accepts a single argument, the <code>model</code>.</p><pre><code class="language-julia hljs">before_autostart(engine::RxInferenceEngine)</code></pre><p>Calls before the <code>RxInfer.start()</code> function, if <code>autostart</code> is set to <code>true</code>.</p><pre><code class="language-julia hljs">after_autostart(engine::RxInferenceEngine)</code></pre><p>Calls after the <code>RxInfer.start()</code> function, if <code>autostart</code> is set to <code>true</code>.</p><hr/><p>Here is an example usage of the outlined callbacks:</p><pre><code class="language-julia hljs">function before_model_creation()
+    println(&quot;The model is about to be created&quot;)
+end
+
+function after_model_creation(model::ProbabilisticModel)
+    println(&quot;The model has been created&quot;)
+    println(&quot;  The number of factor nodes is: &quot;, length(RxInfer.getfactornodes(model)))
+    println(&quot;  The number of latent states is: &quot;, length(RxInfer.getrandomvars(model)))
+    println(&quot;  The number of data points is: &quot;, length(RxInfer.getdatavars(model)))
+    println(&quot;  The number of constants is: &quot;, length(RxInfer.getconstantvars(model)))
+end
+
+function before_autostart(engine::RxInferenceEngine)
+    println(&quot;The reactive inference engine is about to start&quot;)
+end
+
+function after_autostart(engine::RxInferenceEngine)
+    println(&quot;The reactive inference engine has been started&quot;)
+end
+
+engine = infer(
+    model          = beta_bernoulli_online(),
+    datastream     = observations,
+    autoupdates    = beta_bernoulli_autoupdates,
+    initialization = @initialization(q(θ) = Beta(1, 1)),
+    keephistory    = 5,
+    autostart      = true,
+    free_energy    = true,
+    callbacks      = (
+        before_model_creation = before_model_creation,
+        after_model_creation  = after_model_creation,
+        before_autostart      = before_autostart,
+        after_autostart       = after_autostart
+    )
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">The model is about to be created
+The model has been created
+  The number of factor nodes is: 2
+  The number of latent states is: 1
+  The number of data points is: 3
+  The number of constants is: 0
+The reactive inference engine is about to start
+The reactive inference engine has been started</code></pre><h2 id="manual-online-inference-event-loop"><a class="docs-heading-anchor" href="#manual-online-inference-event-loop">Event loop</a><a id="manual-online-inference-event-loop-1"></a><a class="docs-heading-anchor-permalink" href="#manual-online-inference-event-loop" title="Permalink"></a></h2><p>In constrast to <a href="../static/#manual-static-inference">Static Inference</a>, the streaming version of the <a href="../overview/#RxInfer.infer"><code>infer</code></a> function  does not provide callbacks such as <code>on_marginal_update</code>, since it is possible to subscribe directly on those updates with the  <code>engine.posteriors</code> field. However, the reactive inference engine provides an ability to listen to its internal event loop, that also includes &quot;pre&quot; and &quot;post&quot; events for posterior updates.</p><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="RxInfer.RxInferenceEvent" href="#RxInfer.RxInferenceEvent"><code>RxInfer.RxInferenceEvent</code></a> — <span class="docstring-category">Type</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">RxInferenceEvent{T, D}</code></pre><p>The <code>RxInferenceEngine</code> sends events in a form of the <code>RxInferenceEvent</code> structure. <code>T</code> represents the type of an event, <code>D</code> represents the type of a data associated with the event. The type of data depends on the type of an event, but usually represents a tuple, which can be unrolled automatically with the Julia&#39;s splitting syntax, e.g. <code>model, iteration = event</code>.  See the documentation of the <code>rxinference</code> function for possible event types and their associated data types.</p><p>The events system itself uses the <code>Rocket.jl</code> library API. For example, one may create a custom event listener in the following way:</p><pre><code class="language-julia hljs">using Rocket
+
+struct MyEventListener &lt;: Rocket.Actor{RxInferenceEvent}
+    # ... extra fields
+end
+
+function Rocket.on_next!(listener::MyEventListener, event::RxInferenceEvent{ :after_iteration })
+    model, iteration = event
+    println(&quot;Iteration $(iteration) has been finished.&quot;)
+end
+
+function Rocket.on_error!(listener::MyEventListener, err)
+    # ...
+end
+
+function Rocket.on_complete!(listener::MyEventListener)
+    # ...
+end
+</code></pre><p>and later on:</p><pre><code class="language-julia hljs">engine = infer(events = Val((:after_iteration, )), ...)
+
+subscription = subscribe!(engine.events, MyEventListener(...))</code></pre><p>See also: <a href="../overview/#RxInfer.infer"><code>infer</code></a>, <a href="#RxInfer.RxInferenceEngine"><code>RxInferenceEngine</code></a></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/ReactiveBayes/RxInfer.jl/blob/cb1c6142227c4a91eb2a9ab9c9354a9994d4b351/src/inference/streaming.jl#L382-L423">source</a></section></article><p>Let&#39;s build a simple example by implementing our own event listener that does not do anything complex but simply prints some debugging information.</p><pre><code class="language-julia hljs">struct MyEventListener &lt;: Rocket.Actor{RxInferenceEvent}
+    # ... extra fields
+end</code></pre><p>The available events are</p><pre><code class="language-julia hljs">:before_start</code></pre><p>Emits right before starting the engine with the <a href="#RxInfer.start"><code>RxInfer.start</code></a> function. The data is <code>(engine::RxInferenceEngine, )</code></p><pre><code class="language-julia hljs">function Rocket.on_next!(listener::MyEventListener, event::RxInferenceEvent{ :before_start })
+    (engine, ) = event
+    println(&quot;The engine is about to start.&quot;)
+end</code></pre><pre><code class="language-julia hljs">:after_start</code></pre><p>Emits right after starting the engine with the <a href="#RxInfer.start"><code>RxInfer.start</code></a> function. The data is <code>(engine::RxInferenceEngine, )</code></p><pre><code class="language-julia hljs">function Rocket.on_next!(listener::MyEventListener, event::RxInferenceEvent{ :after_start })
+    (engine, ) = event
+    println(&quot;The engine has been started.&quot;)
+end</code></pre><pre><code class="language-julia hljs">:before_stop</code></pre><p>Emits right before stopping the engine with the <a href="#RxInfer.stop"><code>RxInfer.stop</code></a> function. The data is <code>(engine::RxInferenceEngine, )</code></p><pre><code class="language-julia hljs">function Rocket.on_next!(listener::MyEventListener, event::RxInferenceEvent{ :before_stop })
+    (engine, ) = event
+    println(&quot;The engine is about to be stopped.&quot;)
+end</code></pre><pre><code class="language-julia hljs">:after_stop</code></pre><p>Emits right after stopping the engine with the <a href="#RxInfer.stop"><code>RxInfer.stop</code></a> function. The data is <code>(engine::RxInferenceEngine, )</code></p><pre><code class="language-julia hljs">function Rocket.on_next!(listener::MyEventListener, event::RxInferenceEvent{ :after_stop })
+    (engine, ) = event
+    println(&quot;The engine has been stopped.&quot;)
+end</code></pre><pre><code class="language-julia hljs">:on_new_data</code></pre><p>Emits right before processing new data point. The data is <code>(model::ProbabilisticModel, data)</code></p><pre><code class="language-julia hljs">function Rocket.on_next!(listener::MyEventListener, event::RxInferenceEvent{ :on_new_data })
+    (model, data) = event
+    println(&quot;The new data point has been received: &quot;, data)
+end</code></pre><pre><code class="language-julia hljs">:before_iteration</code></pre><p>Emits right before starting new variational iteration. The data is <code>(model::ProbabilisticModel, iteration::Int)</code></p><pre><code class="language-julia hljs">function Rocket.on_next!(listener::MyEventListener, event::RxInferenceEvent{ :before_iteration })
+    (model, iteration) = event
+    println(&quot;Starting new variational iteration #&quot;, iteration)
+end</code></pre><pre><code class="language-julia hljs">:before_auto_update</code></pre><p>Emits right before executing the <a href="../autoupdates/#RxInfer.@autoupdates"><code>@autoupdates</code></a>. The data is <code>(model::ProbabilisticModel, iteration::Int, autoupdates)</code></p><pre><code class="language-julia hljs">function Rocket.on_next!(listener::MyEventListener, event::RxInferenceEvent{ :before_auto_update })
+    (model, iteration, autoupdates) = event
+    println(&quot;Before processing autoupdates&quot;)
+end</code></pre><pre><code class="language-julia hljs">:after_auto_update</code></pre><p>Emits right after executing the <a href="../autoupdates/#RxInfer.@autoupdates"><code>@autoupdates</code></a>. The data is <code>(model::ProbabilisticModel, iteration::Int, autoupdates)</code></p><pre><code class="language-julia hljs">function Rocket.on_next!(listener::MyEventListener, event::RxInferenceEvent{ :after_auto_update })
+    (model, iteration, autoupdates) = event
+    println(&quot;After processing autoupdates&quot;)
+end</code></pre><pre><code class="language-julia hljs">:before_data_update</code></pre><p>Emits right before feeding the model with the new data. The data is <code>(model::ProbabilisticModel, iteration::Int, data)</code></p><pre><code class="language-julia hljs">function Rocket.on_next!(listener::MyEventListener, event::RxInferenceEvent{ :before_data_update })
+    (model, iteration, data) = event
+    println(&quot;Before processing new data &quot;, data)
+end</code></pre><pre><code class="language-julia hljs">:after_data_update</code></pre><p>Emits right after feeding the model with the new data. The data is <code>(model::ProbabilisticModel, iteration::Int, data)</code></p><pre><code class="language-julia hljs">function Rocket.on_next!(listener::MyEventListener, event::RxInferenceEvent{ :after_data_update })
+    (model, iteration, data) = event
+    println(&quot;After processing new data &quot;, data)
+end</code></pre><pre><code class="language-julia hljs">:after_iteration</code></pre><p>Emits right after finishing a variational iteration. The data is <code>(model::ProbabilisticModel, iteration::Int)</code></p><pre><code class="language-julia hljs">function Rocket.on_next!(listener::MyEventListener, event::RxInferenceEvent{ :after_iteration })
+    (model, iteration) = event
+    println(&quot;Finishing the variational iteration #&quot;, iteration)
+end</code></pre><pre><code class="language-julia hljs">:before_history_save</code></pre><p>Emits right before saving the history (if requested). The data is <code>(model::ProbabilisticModel, )</code></p><pre><code class="language-julia hljs">function Rocket.on_next!(listener::MyEventListener, event::RxInferenceEvent{ :before_history_save })
+    (model, ) = event
+    println(&quot;Before saving the history&quot;)
+end</code></pre><pre><code class="language-julia hljs">:after_history_save</code></pre><p>Emits right after saving the history (if requested). The data is <code>(model::ProbabilisticModel, )</code></p><pre><code class="language-julia hljs">function Rocket.on_next!(listener::MyEventListener, event::RxInferenceEvent{ :after_history_save })
+    (model, ) = event
+    println(&quot;After saving the history&quot;)
+end</code></pre><pre><code class="language-julia hljs">:on_tick</code></pre><p>Emits right after finishing processing the new observations and completing the inference step. The data is <code>(model::ProbabilisticModel, )</code></p><pre><code class="language-julia hljs">function Rocket.on_next!(listener::MyEventListener, event::RxInferenceEvent{ :on_tick })
+    (model, ) = event
+    println(&quot;Finishing the inference for the new observations&quot;)
+end</code></pre><pre><code class="language-julia hljs">:on_error</code></pre><p>Emits if an error occurs in the inference engine. The data is <code>(model::ProbabilisticModel, err::Any)</code></p><pre><code class="language-julia hljs">function Rocket.on_next!(listener::MyEventListener, event::RxInferenceEvent{ :on_error })
+    (model, err) = event
+    println(&quot;An error occured during the inference procedure: &quot;, err)
+end</code></pre><pre><code class="language-julia hljs">:on_complete</code></pre><p>Emits when the <code>datastream</code> completes. The data is <code>(model::ProbabilisticModel, )</code></p><pre><code class="language-julia hljs">function Rocket.on_next!(listener::MyEventListener, event::RxInferenceEvent{ :on_complete })
+    (model, ) = event
+    println(&quot;The data stream completed. The inference has been finished.&quot;)
+end</code></pre><p>Let&#39;s use our event listener with the <a href="../overview/#RxInfer.infer"><code>infer</code></a> function:</p><pre><code class="language-julia hljs">engine = infer(
+    model          = beta_bernoulli_online(),
+    datastream     = observations,
+    autoupdates    = beta_bernoulli_autoupdates,
+    initialization = @initialization(q(θ) = Beta(1, 1)),
+    keephistory    = 5,
+    iterations     = 2,
+    autostart      = false,
+    free_energy    = true,
+    events         = Val((
+        :before_start,
+        :after_start,
+        :before_stop,
+        :after_stop,
+        :on_new_data,
+        :before_iteration,
+        :before_auto_update,
+        :after_auto_update,
+        :before_data_update,
+        :after_data_update,
+        :after_iteration,
+        :before_history_save,
+        :after_history_save,
+        :on_tick,
+        :on_error,
+        :on_complete
+    ))
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">RxInferenceEngine:
+  Posteriors stream    | enabled for (θ)
+  Free Energy stream   | enabled
+  Posteriors history   | available for (θ)
+  Free Energy history  | available
+  Enabled events       | [ before_start, after_start, before_stop, after_stop, on_new_data, before_iteration, before_auto_update, after_auto_update, before_data_update, after_data_update, after_iteration, before_history_save, after_history_save, on_tick, on_error, on_complete ]</code></pre><p>After we have created the engine, we can subscribe on events and <a href="#RxInfer.start"><code>RxInfer.start</code></a> the engine:</p><pre><code class="language-julia hljs">events_subscription = subscribe!(engine.events, MyEventListener())
+
+RxInfer.start(engine)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">The engine is about to start.
+The new data point has been received: (y = false,)
+Starting new variational iteration #1
+Before processing autoupdates
+After processing autoupdates
+Before processing new data (y = false,)
+After processing new data (y = false,)
+Finishing the variational iteration #1
+Starting new variational iteration #2
+Before processing autoupdates
+After processing autoupdates
+Before processing new data (y = false,)
+After processing new data (y = false,)
+Finishing the variational iteration #2
+Before saving the history
+After saving the history
+Finishing the inference for the new observations
+The engine has been started.</code></pre><p>The event loop stays idle without new observation and runs again when a new observation becomes available:</p><pre><code class="language-julia hljs">next!(datastream, rand(rng, distribution))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">The new data point has been received: (y = false,)
+Starting new variational iteration #1
+Before processing autoupdates
+After processing autoupdates
+Before processing new data (y = false,)
+After processing new data (y = false,)
+Finishing the variational iteration #1
+Starting new variational iteration #2
+Before processing autoupdates
+After processing autoupdates
+Before processing new data (y = false,)
+After processing new data (y = false,)
+Finishing the variational iteration #2
+Before saving the history
+After saving the history
+Finishing the inference for the new observations</code></pre><p>Let&#39;s complete the <code>datastream</code> </p><pre><code class="language-julia hljs">complete!(datastream)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">The data stream completed. The inference has been finished.</code></pre><p>In this case, it is not necessary to <a href="#RxInfer.stop"><code>RxInfer.stop</code></a> the engine, because  it will be stopped automatically.</p><pre><code class="language-julia hljs">RxInfer.stop(engine)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">┌ Warning: The engine has been completed or errored. Cannot stop an exhausted engine.
+└ @ RxInfer ~/work/RxInfer.jl/RxInfer.jl/src/inference/streaming.jl:240</code></pre><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>The <code>:before_stop</code> and <code>:after_stop</code> events are not emmited in case of the datastream completion. Use the <code>:on_complete</code> instead.</p></div></div><h2 id="manual-online-inference-data"><a class="docs-heading-anchor" href="#manual-online-inference-data">Using <code>data</code> keyword argument with streaming inference</a><a id="manual-online-inference-data-1"></a><a class="docs-heading-anchor-permalink" href="#manual-online-inference-data" title="Permalink"></a></h2><p>The streaming version does support static datasets as well.  Internally, it converts it to a datastream, that emits all observations in a sequntial order without any delay. As an example:</p><pre><code class="language-julia hljs">staticdata = rand(rng, distribution, 1_000)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1000-element Vector{Bool}:
+ 0
+ 1
+ 0
+ 0
+ 1
+ 0
+ 0
+ 0
+ 0
+ 0
+ ⋮
+ 0
+ 0
+ 0
+ 0
+ 1
+ 1
+ 0
+ 0
+ 0</code></pre><p>Use the <code>data</code> keyword argument instead of the <code>datastream</code> to pass the static data.</p><pre><code class="language-julia hljs">engine = infer(
+    model          = beta_bernoulli_online(),
+    data           = (y = staticdata, ),
+    autoupdates    = beta_bernoulli_autoupdates,
+    initialization = @initialization(q(θ) = Beta(1, 1)),
+    keephistory    = 1000,
+    autostart      = true,
+    free_energy    = true,
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">RxInferenceEngine:
+  Posteriors stream    | enabled for (θ)
+  Free Energy stream   | enabled
+  Posteriors history   | available for (θ)
+  Free Energy history  | available
+  Enabled events       | [  ]</code></pre><pre><code class="language-julia hljs">engine.history[:θ]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1000-element DataStructures.CircularBuffer{Any}:
+ Beta{Float64}(α=1.0, β=2.0)
+ Beta{Float64}(α=2.0, β=2.0)
+ Beta{Float64}(α=2.0, β=3.0)
+ Beta{Float64}(α=2.0, β=4.0)
+ Beta{Float64}(α=3.0, β=4.0)
+ Beta{Float64}(α=3.0, β=5.0)
+ Beta{Float64}(α=3.0, β=6.0)
+ Beta{Float64}(α=3.0, β=7.0)
+ Beta{Float64}(α=3.0, β=8.0)
+ Beta{Float64}(α=3.0, β=9.0)
+ ⋮
+ Beta{Float64}(α=322.0, β=672.0)
+ Beta{Float64}(α=322.0, β=673.0)
+ Beta{Float64}(α=322.0, β=674.0)
+ Beta{Float64}(α=322.0, β=675.0)
+ Beta{Float64}(α=323.0, β=675.0)
+ Beta{Float64}(α=324.0, β=675.0)
+ Beta{Float64}(α=324.0, β=676.0)
+ Beta{Float64}(α=324.0, β=677.0)
+ Beta{Float64}(α=324.0, β=678.0)</code></pre><pre><code class="language-julia hljs">@gif for posterior in engine.history[:θ]
+    rθ = range(0, 1, length = 1000)
+    pθ = plot(rθ, (x) -&gt; pdf(posterior, x), fillalpha=0.3, fillrange = 0, label=&quot;P(θ|y)&quot;, c=3)
+    pθ = vline!(pθ, [ hidden_θ ], label = &quot;Real value of θ&quot;)
+
+    plot(pθ)
+end</code></pre><img src="51ef0c42.gif" alt="Example block output"/><h2 id="manual-online-inference-where-to-go"><a class="docs-heading-anchor" href="#manual-online-inference-where-to-go">Where to go next?</a><a id="manual-online-inference-where-to-go-1"></a><a class="docs-heading-anchor-permalink" href="#manual-online-inference-where-to-go" title="Permalink"></a></h2><p>This guide covered some fundamental usages of the <a href="../overview/#RxInfer.infer"><code>infer</code></a> function in the context of streamline inference,  but did not cover all the available keyword arguments of the function. Read more explanation about the other keyword arguments  in the <a href="../overview/#user-guide-inference-execution">Overview</a> section or check out the <a href="../static/#manual-static-inference">Static Inference</a> section. Also check out more complex <a href="https://reactivebayes.github.io/RxInfer.jl/stable/examples/overview/">examples</a>.</p><script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+mermaid.initialize({
+    startOnLoad: true,
+    theme: "neutral"
+});
+</script></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../static/">« Static inference</a><a class="docs-footer-nextpage" href="../initialization/">Initialization »</a><div class="flexbox-break"></div><p class="footer-message">Created in <a href="https://biaslab.github.io/">BIASlab</a>, maintained by <a href="https://github.com/ReactiveBayes">ReactiveBayes</a>, powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.0 on <span class="colophon-date" title="Friday 17 January 2025 21:02">Friday 17 January 2025</span>. Using Julia version 1.10.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

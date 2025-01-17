@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Getting started · RxInfer.jl</title><meta name="title" content="Getting started · RxInfer.jl"/><meta property="og:title" content="Getting started · RxInfer.jl"/><meta property="twitter:title" content="Getting started · RxInfer.jl"/><meta name="description" content="Julia package for automated Bayesian inference on a factor graph with reactive message passing"/><meta property="og:description" content="Julia package for automated Bayesian inference on a factor graph with reactive message passing"/><meta property="twitter:description" content="Julia package for automated Bayesian inference on a factor graph with reactive message passing"/><meta property="og:url" content="https://reactivebayes.github.io/RxInfer.jl/manuals/getting-started/"/><meta property="twitter:url" content="https://reactivebayes.github.io/RxInfer.jl/manuals/getting-started/"/><link rel="canonical" href="https://reactivebayes.github.io/RxInfer.jl/manuals/getting-started/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/theme.css" rel="stylesheet" type="text/css"/><link href="../../assets/header.css" rel="stylesheet" type="text/css"/><script src="../../assets/header.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img class="docs-light-only" src="../../assets/logo.svg" alt="RxInfer.jl logo"/><img class="docs-dark-only" src="../../assets/logo-dark.svg" alt="RxInfer.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../../">RxInfer.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">User guide</span><ul><li class="is-active"><a class="tocitem" href>Getting started</a><ul class="internal"><li><a class="tocitem" href="#Installation"><span>Installation</span></a></li><li><a class="tocitem" href="#Importing-RxInfer"><span>Importing RxInfer</span></a></li><li><a class="tocitem" href="#Example:-Inferring-the-bias-of-a-coin"><span>Example: Inferring the bias of a coin</span></a></li><li><a class="tocitem" href="#Where-to-go-next?"><span>Where to go next?</span></a></li></ul></li><li><a class="tocitem" href="../comparison/">RxInfer.jl vs. Others</a></li><li><a class="tocitem" href="../model-specification/">Model specification</a></li><li><a class="tocitem" href="../constraints-specification/">Constraints specification</a></li><li><a class="tocitem" href="../meta-specification/">Meta specification</a></li><li><input class="collapse-toggle" id="menuitem-2-6" type="checkbox"/><label class="tocitem" for="menuitem-2-6"><span class="docs-label">Inference specification</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../inference/overview/">Overview</a></li><li><a class="tocitem" href="../inference/static/">Static inference</a></li><li><a class="tocitem" href="../inference/streamlined/">Streamline inference</a></li><li><a class="tocitem" href="../inference/initialization/">Initialization</a></li><li><a class="tocitem" href="../inference/autoupdates/">Auto-updates</a></li><li><a class="tocitem" href="../inference/delta-node/">Deterministic nodes</a></li><li><a class="tocitem" href="../inference/nonconjugate/">Non-conjugate inference</a></li><li><a class="tocitem" href="../inference/undefinedrules/">Undefined message update rules</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-2-7" type="checkbox"/><label class="tocitem" for="menuitem-2-7"><span class="docs-label">Inference customization</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../customization/custom-node/">Defining a custom node and rules</a></li><li><a class="tocitem" href="../customization/postprocess/">Inference results postprocessing</a></li></ul></li><li><a class="tocitem" href="../debugging/">Debugging</a></li><li><a class="tocitem" href="../migration-guide-v2-v3/">Migration from v2 to v3</a></li><li><input class="collapse-toggle" id="menuitem-2-10" type="checkbox"/><label class="tocitem" for="menuitem-2-10"><span class="docs-label">Sharp bits of RxInfer</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../sharpbits/overview/">Overview</a></li><li><a class="tocitem" href="../sharpbits/rule-not-found/">Rule Not Found Error</a></li><li><a class="tocitem" href="../sharpbits/stack-overflow-inference/">Stack Overflow in Message Computations</a></li><li><a class="tocitem" href="../sharpbits/usage-colon-equality/">Using <code>=</code> instead of <code>:=</code> for deterministic nodes</a></li></ul></li></ul></li><li><span class="tocitem">Library</span><ul><li><a class="tocitem" href="../../library/model-construction/">Model construction</a></li><li><a class="tocitem" href="../../library/bethe-free-energy/">Bethe Free Energy</a></li><li><a class="tocitem" href="../../library/functional-forms/">Functional form constraints</a></li><li><a class="tocitem" href="../../library/exported-methods/">Exported methods</a></li></ul></li><li><a class="tocitem" href="../../examples/overview/">Examples</a></li><li><span class="tocitem">Contributing</span><ul><li><a class="tocitem" href="../../contributing/guide/">Contribution guide</a></li><li><a class="tocitem" href="../../contributing/guidelines/">Contribution guidelines</a></li><li><a class="tocitem" href="../../contributing/new-documentation/">Contributing to the documentation</a></li><li><a class="tocitem" href="../../contributing/new-example/">Contributing to the examples</a></li><li><a class="tocitem" href="../../contributing/new-release/">Publishing a new release</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">User guide</a></li><li class="is-active"><a href>Getting started</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Getting started</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/ReactiveBayes/RxInfer.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/ReactiveBayes/RxInfer.jl/blob/main/docs/src/manuals/getting-started.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="user-guide-getting-started"><a class="docs-heading-anchor" href="#user-guide-getting-started">Getting started</a><a id="user-guide-getting-started-1"></a><a class="docs-heading-anchor-permalink" href="#user-guide-getting-started" title="Permalink"></a></h1><p><code>RxInfer.jl</code> is a Julia package for Bayesian Inference on Factor Graphs by Message Passing.  It supports both exact and variational inference algorithms and forms an ecosystem around three main packages: </p><ul><li><a href="https://github.com/reactivebayes/ReactiveMP.jl"><code>ReactiveMP.jl</code></a> - the underlying message passing-based inference engine</li><li><a href="https://github.com/reactivebayes/GraphPPL.jl"><code>GraphPPL.jl</code></a> - model and constraints specification package</li><li><a href="https://github.com/reactivebayes/Rocket.jl"><code>Rocket.jl</code></a> - reactive extensions package for Julia </li></ul><p>This page provides the necessary information you need to get started with <code>Rxinfer</code>. We will show the general approach to solving inference problems with <code>RxInfer</code> by means of a running example: inferring the bias of a coin using a simple Beta-Bernoulli model.</p><h2 id="Installation"><a class="docs-heading-anchor" href="#Installation">Installation</a><a id="Installation-1"></a><a class="docs-heading-anchor-permalink" href="#Installation" title="Permalink"></a></h2><p><code>RxInfer</code> is an officially registered Julia package. Install <code>RxInfer</code> through the Julia package manager by using the following command from the package manager mode:</p><pre><code class="language-julia hljs">] add RxInfer</code></pre><p>Alternatively:</p><pre><code class="nohighlight hljs">julia&gt; import Pkg
+
+julia&gt; Pkg.add(&quot;RxInfer&quot;)</code></pre><h2 id="Importing-RxInfer"><a class="docs-heading-anchor" href="#Importing-RxInfer">Importing RxInfer</a><a id="Importing-RxInfer-1"></a><a class="docs-heading-anchor-permalink" href="#Importing-RxInfer" title="Permalink"></a></h2><p>To add <code>RxInfer</code> package (and all associated packages) into a running Julia session simply run:</p><pre><code class="language-julia hljs">using RxInfer</code></pre><p>Read more about about <code>using</code> in the <a href="../../library/exported-methods/#lib-using-methods">Using methods from RxInfer</a> section of the documentation.</p><h2 id="Example:-Inferring-the-bias-of-a-coin"><a class="docs-heading-anchor" href="#Example:-Inferring-the-bias-of-a-coin">Example: Inferring the bias of a coin</a><a id="Example:-Inferring-the-bias-of-a-coin-1"></a><a class="docs-heading-anchor-permalink" href="#Example:-Inferring-the-bias-of-a-coin" title="Permalink"></a></h2><p>The <code>RxInfer</code> approach to solving inference problems consists of three phases:</p><ol><li><a href="#getting-started-model-specification">Model specification</a>: <code>RxInfer</code> uses <code>GraphPPL</code> package for model specification part. It offers a domain-specific language to specify your probabilistic model.</li><li><a href="#getting-started-inference-specification">Inference specification</a>: <code>RxInfer</code> inference API uses <code>ReactiveMP</code> inference engine under the hood and has been designed to be as flexible as possible. It is compatible both with asynchronous infinite data streams and with static datasets. For most of the use cases it consists of the same simple building blocks. In this example we will show one of the many possible ways to infer your quantities of interest.</li><li><a href="../inference/overview/#user-guide-inference-execution">Inference execution</a>: Given model specification and inference procedure it is pretty straightforward to use package&#39;s API to pass data to the inference backend and to run actual inference.</li></ol><h3 id="user-guide-getting-started-coin-flip-simulation"><a class="docs-heading-anchor" href="#user-guide-getting-started-coin-flip-simulation">Coin flip simulation</a><a id="user-guide-getting-started-coin-flip-simulation-1"></a><a class="docs-heading-anchor-permalink" href="#user-guide-getting-started-coin-flip-simulation" title="Permalink"></a></h3><p>Let&#39;s start by creating some dataset. One approach could be flipping a coin N times and recording each outcome. For simplicity in this example we will use static pre-generated dataset. Each sample can be thought of as the outcome of single flip which is either heads or tails (1 or 0). We will assume that our virtual coin is biased, and lands heads up on 75% of the trials (on average).</p><p>First let&#39;s setup our environment by importing all needed packages:</p><pre><code class="language-julia hljs">using RxInfer, Distributions, Random</code></pre><p>Next, let&#39;s define our dataset:</p><pre><code class="language-julia hljs"># Random number generator for reproducibility
+rng            = MersenneTwister(42)
+# Number of coin flips (observations)
+n_observations = 10
+# The bias of a coin used in the demonstration
+coin_bias      = 0.75
+# We assume that the outcome of each coin flip is
+# distributed as the `Bernoulli` distrinution
+distribution   = Bernoulli(coin_bias)
+# Simulated coin flips
+dataset        = rand(rng, distribution, n_observations)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">10-element Vector{Bool}:
+ 1
+ 1
+ 1
+ 1
+ 0
+ 0
+ 1
+ 1
+ 0
+ 1</code></pre><h3 id="getting-started-model-specification"><a class="docs-heading-anchor" href="#getting-started-model-specification">Model specification</a><a id="getting-started-model-specification-1"></a><a class="docs-heading-anchor-permalink" href="#getting-started-model-specification" title="Permalink"></a></h3><p>In a Bayesian setting, the next step is to specify our probabilistic model. This amounts to specifying the joint probability of the random variables of the system.</p><h4 id="Likelihood"><a class="docs-heading-anchor" href="#Likelihood">Likelihood</a><a id="Likelihood-1"></a><a class="docs-heading-anchor-permalink" href="#Likelihood" title="Permalink"></a></h4><p>We&#39;ve made an assumption that the outcome of each coin flip is governed by the <a href="https://en.wikipedia.org/wiki/Bernoulli_distribution"><code>Bernoulli</code></a> distribution, i.e.</p><p class="math-container">\[y_i \sim \mathrm{Bernoulli}(\theta),\]</p><p>where <span>$y_i = 1$</span> represents &quot;heads&quot;, <span>$y_i = 0$</span> represents &quot;tails&quot;. The underlying probability of the coin landing heads up for a single coin flip is <span>$\theta \in [0,1]$</span>.</p><h4 id="Prior"><a class="docs-heading-anchor" href="#Prior">Prior</a><a id="Prior-1"></a><a class="docs-heading-anchor-permalink" href="#Prior" title="Permalink"></a></h4><p>We will choose the conjugate prior of the <code>Bernoulli</code> likelihood function defined above, namely the <a href="https://en.wikipedia.org/wiki/Beta_distribution"><code>Beta</code></a> distribution, i.e.</p><p class="math-container">\[\theta \sim Beta(a, b),\]</p><p>where <span>$a$</span> and <span>$b$</span> are the hyperparameters that encode our prior beliefs about the possible values of <span>$\theta$</span>. We will assign values to the hyperparameters in a later step.   </p><h4 id="Joint-probability"><a class="docs-heading-anchor" href="#Joint-probability">Joint probability</a><a id="Joint-probability-1"></a><a class="docs-heading-anchor-permalink" href="#Joint-probability" title="Permalink"></a></h4><p>The joint probability is given by the multiplication of the likelihood and the prior, i.e.</p><p class="math-container">\[P(y_{1:N}, θ) = P(θ) \prod_{i=1}^N P(y_i | θ).\]</p><p>Now let&#39;s see how to specify this model using GraphPPL&#39;s package syntax.</p><pre><code class="language-julia hljs"># GraphPPL.jl export `@model` macro for model specification
+# It accepts a regular Julia function and builds an FFG under the hood
+@model function coin_model(y, a, b)
+    # We endow θ parameter of our model with some prior
+    θ ~ Beta(a, b)
+    # or, in this particular case, the `Uniform(0.0, 1.0)` prior also works:
+    # θ ~ Uniform(0.0, 1.0)
+
+    # We assume that outcome of each coin flip is governed by the Bernoulli distribution
+    for i in eachindex(y)
+        y[i] ~ Bernoulli(θ)
+    end
+end</code></pre><p>As you can see, <code>RxInfer</code> offers a model specification syntax that resembles closely to the mathematical equations defined above. Alternatively, we could use a broadcasting syntax:</p><pre><code class="language-julia hljs">@model function coin_model(y, a, b)
+    θ  ~ Beta(a, b)
+    y .~ Bernoulli(θ)
+end</code></pre><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>To quickly check the list of all available factor nodes that can be used in the model specification language call <code>?ReactiveMP.is_predefined_node</code> or <code>Base.doc(ReactiveMP.is_predefined_node)</code>.</p></div></div><h3 id="getting-started-conditioning"><a class="docs-heading-anchor" href="#getting-started-conditioning">Conditioning on data and inspecting the model structure</a><a id="getting-started-conditioning-1"></a><a class="docs-heading-anchor-permalink" href="#getting-started-conditioning" title="Permalink"></a></h3><p>Given the model specification we can construct an actual model graph and visualize it. In order to do that we can use the <code>|</code> operator to condition on data and the <code>RxInfer.create_model</code> function to create the graph. Read more about condition in the <a href="../model-specification/#user-guide-model-specification-conditioning">corresponding section</a> of the documentation.</p><pre><code class="language-julia hljs">conditioned = coin_model(a = 2.0, b = 7.0) | (y = [ true, false, true ], )</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">coin_model(a = 2.0, b = 7.0) conditioned on: 
+  y = Bool[1, 0, 1]
+</code></pre><p>We can use <code>GraphPPL.jl</code> visualisation capabilities to show the structure of the resulting graph. For that we need two extra packages installed: <code>Cairo</code> and <code>GraphPlot</code>. Note, that those packages are not included in the <code>RxInfer</code> package and must be installed separately.</p><pre><code class="language-julia hljs">using Cairo, GraphPlot
+
+# `Create` the actual graph of the model conditioned on the data
+model = RxInfer.create_model(conditioned)
+
+# Call `gplot` function from `GraphPlot` to visualise the structure of the graph
+GraphPlot.gplot(RxInfer.getmodel(model))</code></pre><img src='data:image/svg+xml;utf-8,<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     version="1.2"
+     width="100mm" height="100mm" viewBox="0 0 100 100"
+     stroke="none"
+     fill="%23000000"
+     stroke-width="0.3"
+     font-size="3.88"
+>
+<defs>
+  <marker id="arrow" markerWidth="15" markerHeight="7" refX="5" refY="3.5" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L15,3.5 L0,7 z" stroke="context-stroke" fill="context-stroke"/>
+  </marker>
+</defs>
+<g fill="%23000000" fill-opacity="0.000" id="img-6450c568-1">
+  <g transform="translate(50,50)">
+    <path d="M-50,-50 L50,-50 50,50 -50,50  z" class="primitive"/>
+  </g>
+</g>
+<g stroke-width="0.95" stroke="%23D3D3D3" id="img-6450c568-2">
+</g>
+<g stroke-width="0.95" stroke="%23D3D3D3" id="img-6450c568-3">
+  <g transform="translate(50.09,37.13)">
+    <path fill="none" d="M-0.02,9.76 L0.02,-9.76 " class="primitive"/>
+  </g>
+  <g transform="translate(61.65,51.93)">
+    <path fill="none" d="M-8.34,-1.26 L8.34,1.26 " class="primitive"/>
+  </g>
+  <g transform="translate(50.05,61.62)">
+    <path fill="none" d="M0.01,-8.15 L-0.01,8.15 " class="primitive"/>
+  </g>
+  <g transform="translate(38.52,51.84)">
+    <path fill="none" d="M8.27,-1.19 L-8.27,1.19 " class="primitive"/>
+  </g>
+  <g transform="translate(45.26,16.2)">
+    <path fill="none" d="M-3.13,-5.07 L3.13,5.07 " class="primitive"/>
+  </g>
+  <g transform="translate(55,16.28)">
+    <path fill="none" d="M3.13,-5 L-3.13,5 " class="primitive"/>
+  </g>
+  <g transform="translate(82.46,55.22)">
+    <path fill="none" d="M5.96,1 L-5.96,-1 " class="primitive"/>
+  </g>
+  <g transform="translate(50,82.37)">
+    <path fill="none" d="M-0.02,6.01 L0.02,-6.01 " class="primitive"/>
+  </g>
+  <g transform="translate(17.66,55.01)">
+    <path fill="none" d="M-6.08,0.98 L6.08,-0.98 " class="primitive"/>
+  </g>
+</g>
+<g fill="%23D3D3D3" id="img-6450c568-4">
+</g>
+<g fill="%23D3D3D3" id="img-6450c568-5">
+</g>
+<g font-size="4" fill="%23000000" id="img-6450c568-6">
+</g>
+<g stroke-width="0" stroke="%23000000" stroke-opacity="0.000" fill="%2340E0D0" id="img-6450c568-7">
+  <g transform="translate(50.06,50.18)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(40.4,8.33)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(59.88,8.49)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(50.12,24.07)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(91.67,56.78)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(49.96,91.67)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(8.33,56.51)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(73.25,53.67)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(50.04,73.07)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(26.99,53.51)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+</g>
+<g font-family="Helvetica" font-size="4" fill="%23000000" id="img-6450c568-8">
+  <g transform="translate(50.06,50.18)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">θ</text>
+    </g>
+  </g>
+  <g transform="translate(40.4,8.33)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">constvar</text>
+    </g>
+  </g>
+  <g transform="translate(59.88,8.49)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">constvar</text>
+    </g>
+  </g>
+  <g transform="translate(50.12,24.07)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">Beta</text>
+    </g>
+  </g>
+  <g transform="translate(91.67,56.78)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">y</text>
+    </g>
+  </g>
+  <g transform="translate(49.96,91.67)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">y</text>
+    </g>
+  </g>
+  <g transform="translate(8.33,56.51)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">y</text>
+    </g>
+  </g>
+  <g transform="translate(73.25,53.67)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">Bernoulli</text>
+    </g>
+  </g>
+  <g transform="translate(50.04,73.07)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">Bernoulli</text>
+    </g>
+  </g>
+  <g transform="translate(26.99,53.51)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">Bernoulli</text>
+    </g>
+  </g>
+</g>
+<g font-family="Helvetica" font-size="4" fill="%23000000" id="img-6450c568-9">
+  <g transform="translate(50,0)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em"></text>
+    </g>
+  </g>
+</g>
+</svg>
+'/><p>In addition, we can also programatically query the structure of the graph:</p><pre><code class="language-julia hljs">RxInfer.getrandomvars(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1-element Vector{GraphPPL.NodeData}:
+ NodeData in context  with properties name = θ, index = nothing</code></pre><pre><code class="language-julia hljs">RxInfer.getdatavars(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">3-element Vector{GraphPPL.NodeData}:
+ NodeData in context  with properties name = y, index = 1
+ NodeData in context  with properties name = y, index = 2
+ NodeData in context  with properties name = y, index = 3</code></pre><pre><code class="language-julia hljs">RxInfer.getconstantvars(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">2-element Vector{GraphPPL.NodeData}:
+ NodeData in context  with properties name = constvar, index = nothing
+ NodeData in context  with properties name = constvar, index = nothing</code></pre><pre><code class="language-julia hljs">RxInfer.getfactornodes(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">4-element Vector{GraphPPL.NodeData}:
+ NodeData in context  with properties fform = Beta, neighbors = Tuple{GraphPPL.NodeLabel, GraphPPL.EdgeLabel, GraphPPL.NodeData}[(θ_1, out, NodeData in context  with properties name = θ, index = nothing), (constvar_2, a, NodeData in context  with properties name = constvar, index = nothing), (constvar_3, b, NodeData in context  with properties name = constvar, index = nothing)]
+ NodeData in context  with properties fform = Bernoulli, neighbors = Tuple{GraphPPL.NodeLabel, GraphPPL.EdgeLabel, GraphPPL.NodeData}[(y_5, out, NodeData in context  with properties name = y, index = 1), (θ_1, p, NodeData in context  with properties name = θ, index = nothing)]
+ NodeData in context  with properties fform = Bernoulli, neighbors = Tuple{GraphPPL.NodeLabel, GraphPPL.EdgeLabel, GraphPPL.NodeData}[(y_6, out, NodeData in context  with properties name = y, index = 2), (θ_1, p, NodeData in context  with properties name = θ, index = nothing)]
+ NodeData in context  with properties fform = Bernoulli, neighbors = Tuple{GraphPPL.NodeLabel, GraphPPL.EdgeLabel, GraphPPL.NodeData}[(y_7, out, NodeData in context  with properties name = y, index = 3), (θ_1, p, NodeData in context  with properties name = θ, index = nothing)]</code></pre><h3 id="Conditioning-on-data-that-is-not-available-at-model-creation-time"><a class="docs-heading-anchor" href="#Conditioning-on-data-that-is-not-available-at-model-creation-time">Conditioning on data that is not available at model creation time</a><a id="Conditioning-on-data-that-is-not-available-at-model-creation-time-1"></a><a class="docs-heading-anchor-permalink" href="#Conditioning-on-data-that-is-not-available-at-model-creation-time" title="Permalink"></a></h3><p>Sometimes the data is not known at model creation time, for example, during reactive inference. For that purpose <code>RxInfer</code> uses <a href="../../library/model-construction/#RxInfer.DeferredDataHandler"><code>RxInfer.DeferredDataHandler</code></a> structure.</p><pre><code class="language-julia hljs"># The only difference here is that we do not specify `a` and `b` as hyperparameters
+# But rather indicate that the data for them will be available later during the inference
+conditioned_with_deffered_data = coin_model() | (
+    y = [ true, false, true ],
+    a = RxInfer.DeferredDataHandler(),
+    b = RxInfer.DeferredDataHandler()
+)
+
+# The graph creation API does not change
+model_with_deffered_data = RxInfer.create_model(conditioned_with_deffered_data)
+
+# We can visualise the graph with missing data handles as well
+GraphPlot.gplot(RxInfer.getmodel(model_with_deffered_data))</code></pre><img src='data:image/svg+xml;utf-8,<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     version="1.2"
+     width="100mm" height="100mm" viewBox="0 0 100 100"
+     stroke="none"
+     fill="%23000000"
+     stroke-width="0.3"
+     font-size="3.88"
+>
+<defs>
+  <marker id="arrow" markerWidth="15" markerHeight="7" refX="5" refY="3.5" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L15,3.5 L0,7 z" stroke="context-stroke" fill="context-stroke"/>
+  </marker>
+</defs>
+<g fill="%23000000" fill-opacity="0.000" id="img-3e25b115-1">
+  <g transform="translate(50,50)">
+    <path d="M-50,-50 L50,-50 50,50 -50,50  z" class="primitive"/>
+  </g>
+</g>
+<g stroke-width="0.95" stroke="%23D3D3D3" id="img-3e25b115-2">
+</g>
+<g stroke-width="0.95" stroke="%23D3D3D3" id="img-3e25b115-3">
+  <g transform="translate(41.89,39.85)">
+    <path fill="none" d="M4,9.29 L-4,-9.29 " class="primitive"/>
+  </g>
+  <g transform="translate(51.97,63.18)">
+    <path fill="none" d="M-3.46,-7.98 L3.46,7.98 " class="primitive"/>
+  </g>
+  <g transform="translate(36.26,58.39)">
+    <path fill="none" d="M8.08,-4.59 L-8.08,4.59 " class="primitive"/>
+  </g>
+  <g transform="translate(59.4,49.49)">
+    <path fill="none" d="M-8.98,1.97 L8.98,-1.97 " class="primitive"/>
+  </g>
+  <g transform="translate(28.38,21.75)">
+    <path fill="none" d="M-5.51,-3.89 L5.51,3.89 " class="primitive"/>
+  </g>
+  <g transform="translate(38.21,17.93)">
+    <path fill="none" d="M1.07,-6.35 L-1.07,6.35 " class="primitive"/>
+  </g>
+  <g transform="translate(60.54,82.93)">
+    <path fill="none" d="M2.49,5.72 L-2.49,-5.72 " class="primitive"/>
+  </g>
+  <g transform="translate(16.83,69.54)">
+    <path fill="none" d="M-5.64,3.28 L5.64,-3.28 " class="primitive"/>
+  </g>
+  <g transform="translate(81.63,44.69)">
+    <path fill="none" d="M6.82,-1.44 L-6.82,1.44 " class="primitive"/>
+  </g>
+</g>
+<g fill="%23D3D3D3" id="img-3e25b115-4">
+</g>
+<g fill="%23D3D3D3" id="img-3e25b115-5">
+</g>
+<g font-size="4" fill="%23000000" id="img-3e25b115-6">
+</g>
+<g stroke-width="0" stroke="%23000000" stroke-opacity="0.000" fill="%2340E0D0" id="img-3e25b115-7">
+  <g transform="translate(47.2,52.17)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(20.17,15.96)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(39.83,8.33)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(36.59,27.53)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(64.34,91.67)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(8.33,74.48)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(91.67,42.57)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(56.73,74.19)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(25.32,64.6)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+  <g transform="translate(71.59,46.81)">
+    <circle cx="0" cy="0" r="3.16" class="primitive"/>
+  </g>
+</g>
+<g font-family="Helvetica" font-size="4" fill="%23000000" id="img-3e25b115-8">
+  <g transform="translate(47.2,52.17)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">θ</text>
+    </g>
+  </g>
+  <g transform="translate(20.17,15.96)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">a</text>
+    </g>
+  </g>
+  <g transform="translate(39.83,8.33)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">b</text>
+    </g>
+  </g>
+  <g transform="translate(36.59,27.53)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">Beta</text>
+    </g>
+  </g>
+  <g transform="translate(64.34,91.67)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">y</text>
+    </g>
+  </g>
+  <g transform="translate(8.33,74.48)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">y</text>
+    </g>
+  </g>
+  <g transform="translate(91.67,42.57)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">y</text>
+    </g>
+  </g>
+  <g transform="translate(56.73,74.19)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">Bernoulli</text>
+    </g>
+  </g>
+  <g transform="translate(25.32,64.6)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">Bernoulli</text>
+    </g>
+  </g>
+  <g transform="translate(71.59,46.81)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em">Bernoulli</text>
+    </g>
+  </g>
+</g>
+<g font-family="Helvetica" font-size="4" fill="%23000000" id="img-3e25b115-9">
+  <g transform="translate(50,0)">
+    <g class="primitive">
+      <text text-anchor="middle" dy="0.35em"></text>
+    </g>
+  </g>
+</g>
+</svg>
+'/><p>From the model structure visualisation we can see now that both <code>a</code> and <code>b</code> are no longer indicated as constants. Read more about the structure of the graph in <a href="https://reactivebayes.github.io/GraphPPL.jl/stable/"><code>GraphPPL</code> documentation</a>.</p><h3 id="getting-started-inference-specification"><a class="docs-heading-anchor" href="#getting-started-inference-specification">Inference specification</a><a id="getting-started-inference-specification-1"></a><a class="docs-heading-anchor-permalink" href="#getting-started-inference-specification" title="Permalink"></a></h3><h4 id="Automatic-inference-specification"><a class="docs-heading-anchor" href="#Automatic-inference-specification">Automatic inference specification</a><a id="Automatic-inference-specification-1"></a><a class="docs-heading-anchor-permalink" href="#Automatic-inference-specification" title="Permalink"></a></h4><p>Once we have defined our model, the next step is to use <code>RxInfer</code> API to infer quantities of interests. To do this we can use a generic <a href="../inference/overview/#RxInfer.infer"><code>infer</code></a> function that supports static datasets. Read more information about the <a href="../inference/overview/#RxInfer.infer"><code>infer</code></a> function in the <a href="../inference/overview/#user-guide-inference-execution">Inference Execution</a> documentation section.</p><pre><code class="language-julia hljs">result = infer(
+    model = coin_model(a = 2.0, b = 7.0),
+    data  = (y = dataset, )
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Inference results:
+  Posteriors       | available for (θ)
+</code></pre><p>As you can see we don&#39;t need to condition on the data manually, the <a href="../inference/overview/#RxInfer.infer"><code>infer</code></a> function will do it automatically. After the inference is complete we can fetch the results from the <code>.posterior</code> field with the name of the latent state:</p><pre><code class="language-julia hljs">θestimated = result.posteriors[:θ]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Beta{Float64}(α=9.0, β=10.0)</code></pre><p>We can also compute some statistical properties of the result:</p><pre><code class="language-julia hljs">println(&quot;Real bias is &quot;, coin_bias)
+println(&quot;Estimated bias is &quot;, mean(θestimated))
+println(&quot;Standard deviation &quot;, std(θestimated))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Real bias is 0.75
+Estimated bias is 0.47368421052631576
+Standard deviation 0.11164843913471803</code></pre><p>Let&#39;s also visualize the resulting posteriors:</p><pre><code class="language-julia hljs">using Plots
+
+rθ = range(0, 1, length = 1000)
+
+p1 = plot(rθ, (x) -&gt; pdf(Beta(2.0, 7.0), x), title=&quot;Prior&quot;, fillalpha=0.3, fillrange = 0, label=&quot;P(θ)&quot;, c=1,)
+p2 = plot(rθ, (x) -&gt; pdf(θestimated, x), title=&quot;Posterior&quot;, fillalpha=0.3, fillrange = 0, label=&quot;P(θ|y)&quot;, c=3)
+
+plot(p1, p2, layout = @layout([ a; b ]))</code></pre><img src="8f7ea80a.svg" alt="Example block output"/><p>In our dataset we used 10 coin flips and skewed prior to estimate the bias of a coin.  It resulted in a vague posterior distribution, however <code>RxInfer</code> scales very well for large models and factor graphs.  We may use more coin flips in our dataset for better posterior distribution estimates:</p><pre><code class="language-julia hljs">dataset_100   = rand(rng, Bernoulli(coin_bias), 100)
+dataset_1000  = rand(rng, Bernoulli(coin_bias), 1000)
+dataset_10000 = rand(rng, Bernoulli(coin_bias), 10000)</code></pre><pre><code class="language-julia hljs">θestimated_100   = infer(model = coin_model(a = 2.0, b = 7.0), data  = (y = dataset_100, ))
+θestimated_1000  = infer(model = coin_model(a = 2.0, b = 7.0), data  = (y = dataset_1000, ))
+θestimated_10000 = infer(model = coin_model(a = 2.0, b = 7.0), data  = (y = dataset_10000, ))</code></pre><p>Let&#39;s investigate how the number of observation affects the estimated posterior:</p><pre><code class="language-julia hljs">p3 = plot(title = &quot;Posterior&quot;, legend = :topleft)
+p3 = plot!(p3, rθ, (x) -&gt; pdf(θestimated_100.posteriors[:θ], x), fillalpha = 0.3, fillrange = 0, label = &quot;P(θ|y_100)&quot;, c = 4)
+p3 = plot!(p3, rθ, (x) -&gt; pdf(θestimated_1000.posteriors[:θ], x), fillalpha = 0.3, fillrange = 0, label = &quot;P(θ|y_1000)&quot;, c = 5)
+p3 = plot!(p3, rθ, (x) -&gt; pdf(θestimated_10000.posteriors[:θ], x), fillalpha = 0.3, fillrange = 0, label = &quot;P(θ|y_10000)&quot;, c = 6)
+
+plot(p1, p3, layout = @layout([ a; b ]))</code></pre><img src="d9d1f383.svg" alt="Example block output"/><p>We can see that with larger dataset our posterior marginal estimate becomes more and more accurate and represents real value of the bias of a coin.</p><pre><code class="language-julia hljs">println(&quot;Real bias is &quot;, coin_bias)
+println(&quot;Estimated bias is &quot;, mean(θestimated_10000.posteriors[:θ]))
+println(&quot;Standard deviation &quot;, std(θestimated_10000.posteriors[:θ]))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Real bias is 0.75
+Estimated bias is 0.7529223698671196
+Standard deviation 0.004310967761308469</code></pre><h4 id="Missing-data-points"><a class="docs-heading-anchor" href="#Missing-data-points">Missing data points</a><a id="Missing-data-points-1"></a><a class="docs-heading-anchor-permalink" href="#Missing-data-points" title="Permalink"></a></h4><p>RxInfer inference engine understands <code>missing</code> data points in the dataset, for example:</p><pre><code class="language-julia hljs">result = infer(
+    model = coin_model(a = 2.0, b = 7.0),
+    data  = (y = [ true, false, missing, true, false ], )
+)
+result.posteriors[:θ]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Beta{Float64}(α=4.0, β=9.0)</code></pre><p>In principle, the entire dataset may consist of <code>missing</code> entries:</p><pre><code class="language-julia hljs">result = infer(
+    model = coin_model(a = 2.0, b = 7.0),
+    data  = (y = [ missing, missing, missing, missing, missing ], )
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Inference results:
+  Posteriors       | available for (θ)
+  Predictions      | available for (y)
+</code></pre><p>In this case, the resulting posterior is simply equal to the prior (as expected, since no extra information can be extracted from the observations):</p><pre><code class="language-julia hljs">result.posteriors[:θ]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Beta{Float64}(α=2.0, β=7.0)</code></pre><h2 id="Where-to-go-next?"><a class="docs-heading-anchor" href="#Where-to-go-next?">Where to go next?</a><a id="Where-to-go-next?-1"></a><a class="docs-heading-anchor-permalink" href="#Where-to-go-next?" title="Permalink"></a></h2><p>There are a set of <a href="../../examples/overview/#examples-overview">examples</a> available in <code>RxInfer</code> repository that demonstrate the more advanced features of the package for various problems. Alternatively, you can head to the <a href="../model-specification/#user-guide-model-specification">Model specification</a> which provides more detailed information of how to use <code>RxInfer</code> to specify probabilistic models. <a href="../inference/overview/#user-guide-inference-execution">Inference execution</a> section provides a documentation about <code>RxInfer</code> API for running reactive Bayesian inference. Also read the <a href="../comparison/#comparison">Comparison</a> to compare <code>RxInfer</code> with other probabilistic programming libraries. For advances use cases refer to the <a href="../inference/nonconjugate/#inference-nonconjugate">Non-conjugate inference</a> tutorial and inference <a href="../inference/undefinedrules/#inference-undefinedrules">without defining the message update rules explicitly</a>.</p><script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+mermaid.initialize({
+    startOnLoad: true,
+    theme: "neutral"
+});
+</script></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../comparison/">RxInfer.jl vs. Others »</a><div class="flexbox-break"></div><p class="footer-message">Created in <a href="https://biaslab.github.io/">BIASlab</a>, maintained by <a href="https://github.com/ReactiveBayes">ReactiveBayes</a>, powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.0 on <span class="colophon-date" title="Friday 17 January 2025 21:02">Friday 17 January 2025</span>. Using Julia version 1.10.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

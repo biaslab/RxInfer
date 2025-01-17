@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Static inference · RxInfer.jl</title><meta name="title" content="Static inference · RxInfer.jl"/><meta property="og:title" content="Static inference · RxInfer.jl"/><meta property="twitter:title" content="Static inference · RxInfer.jl"/><meta name="description" content="Julia package for automated Bayesian inference on a factor graph with reactive message passing"/><meta property="og:description" content="Julia package for automated Bayesian inference on a factor graph with reactive message passing"/><meta property="twitter:description" content="Julia package for automated Bayesian inference on a factor graph with reactive message passing"/><meta property="og:url" content="https://reactivebayes.github.io/RxInfer.jl/manuals/inference/static/"/><meta property="twitter:url" content="https://reactivebayes.github.io/RxInfer.jl/manuals/inference/static/"/><link rel="canonical" href="https://reactivebayes.github.io/RxInfer.jl/manuals/inference/static/"/><script data-outdated-warner src="../../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../../assets/documenter.js"></script><script src="../../../search_index.js"></script><script src="../../../siteinfo.js"></script><script src="../../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../../assets/themeswap.js"></script><link href="../../../assets/theme.css" rel="stylesheet" type="text/css"/><link href="../../../assets/header.css" rel="stylesheet" type="text/css"/><script src="../../../assets/header.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../../"><img class="docs-light-only" src="../../../assets/logo.svg" alt="RxInfer.jl logo"/><img class="docs-dark-only" src="../../../assets/logo-dark.svg" alt="RxInfer.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../../../">RxInfer.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../../">Home</a></li><li><span class="tocitem">User guide</span><ul><li><a class="tocitem" href="../../getting-started/">Getting started</a></li><li><a class="tocitem" href="../../comparison/">RxInfer.jl vs. Others</a></li><li><a class="tocitem" href="../../model-specification/">Model specification</a></li><li><a class="tocitem" href="../../constraints-specification/">Constraints specification</a></li><li><a class="tocitem" href="../../meta-specification/">Meta specification</a></li><li><input class="collapse-toggle" id="menuitem-2-6" type="checkbox" checked/><label class="tocitem" for="menuitem-2-6"><span class="docs-label">Inference specification</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../overview/">Overview</a></li><li class="is-active"><a class="tocitem" href>Static inference</a><ul class="internal"><li><a class="tocitem" href="#manual-static-inference-model-spec"><span>Model specification</span></a></li><li><a class="tocitem" href="#manual-static-inference-dataset"><span>Dataset of observations</span></a></li><li><a class="tocitem" href="#manual-static-inference-infer"><span>Calling the inference procedure</span></a></li><li><a class="tocitem" href="#manual-static-inference-variational-inference"><span>Variational Inference with static datasets</span></a></li><li><a class="tocitem" href="#manual-static-inference-bfe"><span>Convergence and Bethe Free Energy</span></a></li><li><a class="tocitem" href="#manual-static-inference-callbacks"><span>Callbacks</span></a></li><li><a class="tocitem" href="#manual-static-inference-where-to-go"><span>Where to go next?</span></a></li></ul></li><li><a class="tocitem" href="../streamlined/">Streamline inference</a></li><li><a class="tocitem" href="../initialization/">Initialization</a></li><li><a class="tocitem" href="../autoupdates/">Auto-updates</a></li><li><a class="tocitem" href="../delta-node/">Deterministic nodes</a></li><li><a class="tocitem" href="../nonconjugate/">Non-conjugate inference</a></li><li><a class="tocitem" href="../undefinedrules/">Undefined message update rules</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-2-7" type="checkbox"/><label class="tocitem" for="menuitem-2-7"><span class="docs-label">Inference customization</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../customization/custom-node/">Defining a custom node and rules</a></li><li><a class="tocitem" href="../../customization/postprocess/">Inference results postprocessing</a></li></ul></li><li><a class="tocitem" href="../../debugging/">Debugging</a></li><li><a class="tocitem" href="../../migration-guide-v2-v3/">Migration from v2 to v3</a></li><li><input class="collapse-toggle" id="menuitem-2-10" type="checkbox"/><label class="tocitem" for="menuitem-2-10"><span class="docs-label">Sharp bits of RxInfer</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../sharpbits/overview/">Overview</a></li><li><a class="tocitem" href="../../sharpbits/rule-not-found/">Rule Not Found Error</a></li><li><a class="tocitem" href="../../sharpbits/stack-overflow-inference/">Stack Overflow in Message Computations</a></li><li><a class="tocitem" href="../../sharpbits/usage-colon-equality/">Using <code>=</code> instead of <code>:=</code> for deterministic nodes</a></li></ul></li></ul></li><li><span class="tocitem">Library</span><ul><li><a class="tocitem" href="../../../library/model-construction/">Model construction</a></li><li><a class="tocitem" href="../../../library/bethe-free-energy/">Bethe Free Energy</a></li><li><a class="tocitem" href="../../../library/functional-forms/">Functional form constraints</a></li><li><a class="tocitem" href="../../../library/exported-methods/">Exported methods</a></li></ul></li><li><a class="tocitem" href="../../../examples/overview/">Examples</a></li><li><span class="tocitem">Contributing</span><ul><li><a class="tocitem" href="../../../contributing/guide/">Contribution guide</a></li><li><a class="tocitem" href="../../../contributing/guidelines/">Contribution guidelines</a></li><li><a class="tocitem" href="../../../contributing/new-documentation/">Contributing to the documentation</a></li><li><a class="tocitem" href="../../../contributing/new-example/">Contributing to the examples</a></li><li><a class="tocitem" href="../../../contributing/new-release/">Publishing a new release</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">User guide</a></li><li><a class="is-disabled">Inference specification</a></li><li class="is-active"><a href>Static inference</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Static inference</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/ReactiveBayes/RxInfer.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/ReactiveBayes/RxInfer.jl/blob/main/docs/src/manuals/inference/static.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="manual-static-inference"><a class="docs-heading-anchor" href="#manual-static-inference">Static Inference</a><a id="manual-static-inference-1"></a><a class="docs-heading-anchor-permalink" href="#manual-static-inference" title="Permalink"></a></h1><p>This guide explains how to use the <a href="../overview/#RxInfer.infer"><code>infer</code></a> function for static datasets. We&#39;ll show how <code>RxInfer</code> can estimate posterior beliefs given a set of observations. We&#39;ll use a simple Beta-Bernoulli model as an example, which has been covered in the <a href="../../getting-started/#user-guide-getting-started">Getting Started</a> section, but keep in mind that these techniques can apply to any model.</p><p>Also read about <a href="../streamlined/#manual-online-inference">Streaming Inference</a> or checkout more complex <a href="https://reactivebayes.github.io/RxInfer.jl/stable/examples/overview/">examples</a>.</p><h2 id="manual-static-inference-model-spec"><a class="docs-heading-anchor" href="#manual-static-inference-model-spec">Model specification</a><a id="manual-static-inference-model-spec-1"></a><a class="docs-heading-anchor-permalink" href="#manual-static-inference-model-spec" title="Permalink"></a></h2><p>Also read the <a href="../../model-specification/#user-guide-model-specification">Model Specification</a> section.</p><p>In static inference, we want to update our prior beliefs about certain hidden states given some dataset. To achieve this, we include data as an argument in our model specification:</p><pre><code class="language-julia hljs">using RxInfer
+
+@model function beta_bernoulli(y, a, b)
+    θ ~ Beta(a, b)
+    for i in 1:length(y)
+        y[i] ~ Bernoulli(θ)
+    end
+end</code></pre><p>In this model, we assume that <code>y</code> is a collection of data points, and <code>a</code> and <code>b</code> are just numbers. To run inference in this model, we have to call the <a href="../overview/#RxInfer.infer"><code>infer</code></a> function with the <code>data</code> argument provided.</p><h2 id="manual-static-inference-dataset"><a class="docs-heading-anchor" href="#manual-static-inference-dataset">Dataset of observations</a><a id="manual-static-inference-dataset-1"></a><a class="docs-heading-anchor-permalink" href="#manual-static-inference-dataset" title="Permalink"></a></h2><p>For demonstration purposes, we will use hand crafted dataset:</p><pre><code class="language-julia hljs">using Distributions, StableRNGs
+
+hidden_θ       = 1 / 3.1415
+distribution   = Bernoulli(hidden_θ)
+rng            = StableRNG(43)
+n_observations = 1_000
+dataset        = rand(rng, distribution, n_observations)</code></pre><h2 id="manual-static-inference-infer"><a class="docs-heading-anchor" href="#manual-static-inference-infer">Calling the inference procedure</a><a id="manual-static-inference-infer-1"></a><a class="docs-heading-anchor-permalink" href="#manual-static-inference-infer" title="Permalink"></a></h2><p>Everything is ready to run inference in our simple model. In order to run inference with static dataset using the <a href="../overview/#RxInfer.infer"><code>infer</code></a> function, we need to use the <code>data</code> argument. The <code>data</code> argument  expects a <code>NamedTuple</code> where keys correspond to the names of the model arguments. In our case the model arguments were <code>a</code>, <code>b</code> and <code>y</code>. We treat <code>a</code> and <code>b</code> as hyperparameters and pass them directly to the model constructor and we treat <code>y</code> as our observations, thus we pass it to the <code>data</code> argument as follows:</p><pre><code class="language-julia hljs">results = infer(
+    model = beta_bernoulli(a = 1.0, b = 1.0),
+    data  = (y = dataset, )
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Inference results:
+  Posteriors       | available for (θ)
+</code></pre><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p><code>y</code> inside the <code>@model</code> specification is not the same data collection as provided in the <code>data</code> argument. Inside the <code>@model</code>, <code>y</code> is a collection of nodes in the corresponding factor graph, but it will have exactly the same shape as the collection provided in the <code>data</code> argument, hence we can use some basic Julia function, e.g. <code>length</code>. </p></div></div><p>Note, that we could also pass <code>a</code> and <code>b</code> as data:</p><pre><code class="language-julia hljs">results = infer(
+    model = beta_bernoulli(),
+    data  = (y = dataset, a = 1.0, b = 1.0)
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Inference results:
+  Posteriors       | available for (θ)
+</code></pre><p>The <a href="../overview/#RxInfer.infer"><code>infer</code></a> function, however, requires at least one data argument to be present in the supplied <code>data</code>. The difference between <em>hyperparameters</em> and <em>observations</em> is purely semantic and should not have real influence on the result of the inference procedure. </p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>The inference procedure uses <strong>reactive message passing</strong> protocol and may decide to optimize and precompute certain messages that use fixed hyperparameters, hence changing the order of computed messages. The order of computations may change the convergence properties for some complex models.</p></div></div><p>In case of inference with static datasets, the <a href="../overview/#RxInfer.infer"><code>infer</code></a> function will return the <a href="#RxInfer.InferenceResult"><code>InferenceResult</code></a> structure. This structure has the <code>.posteriors</code> field, which is a <code>Dict</code> like structure that maps names of latent states to their corresponding posteriors. For example:</p><pre><code class="language-julia hljs">results.posteriors[:θ]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Beta{Float64}(α=336.0, β=666.0)</code></pre><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="RxInfer.InferenceResult" href="#RxInfer.InferenceResult"><code>RxInfer.InferenceResult</code></a> — <span class="docstring-category">Type</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">InferenceResult</code></pre><p>This structure is used as a return value from the <a href="../overview/#RxInfer.infer"><code>infer</code></a> function for static datasets. </p><p><strong>Public Fields</strong></p><ul><li><code>posteriors</code>: <code>Dict</code> or <code>NamedTuple</code> of &#39;random variable&#39; - &#39;posterior&#39; pairs. See the <code>returnvars</code> argument for <a href="../overview/#RxInfer.infer"><code>infer</code></a>.</li><li><code>predictions</code>: (optional) <code>Dict</code> or <code>NamedTuple</code> of &#39;data variable&#39; - &#39;prediction&#39; pairs. See the <code>predictvars</code> argument for <a href="../overview/#RxInfer.infer"><code>infer</code></a>.</li><li><code>free_energy</code>: (optional) An array of Bethe Free Energy values per VMP iteration. See the <code>free_energy</code> argument for <a href="../overview/#RxInfer.infer"><code>infer</code></a>.</li><li><code>model</code>: <code>FactorGraphModel</code> object reference.</li><li><code>error</code>: (optional) A reference to an exception, that might have occurred during the inference. See the <code>catch_exception</code> argument for <a href="../overview/#RxInfer.infer"><code>infer</code></a>.</li></ul><p>See also: <a href="../overview/#RxInfer.infer"><code>infer</code></a></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/ReactiveBayes/RxInfer.jl/blob/cb1c6142227c4a91eb2a9ab9c9354a9994d4b351/src/inference/batch.jl#L3-L17">source</a></section></article><p>We can also visualize our posterior results with the <code>Plots.jl</code> package. We  used <code>Beta(a = 1.0, b = 1.0)</code> as a prior, lets compare our prior and posterior beliefs:</p><pre><code class="language-julia hljs">using Plots
+
+rθ = range(0, 1, length = 1000)
+
+p = plot()
+p = plot!(p, rθ, (x) -&gt; pdf(Beta(1.0, 1.0), x), title=&quot;Prior&quot;, fillalpha=0.3, fillrange = 0, label=&quot;P(θ)&quot;, c=1,)
+p = plot!(p, rθ, (x) -&gt; pdf(results.posteriors[:θ], x), title=&quot;Posterior&quot;, fillalpha=0.3, fillrange = 0, label=&quot;P(θ|y)&quot;, c=3)
+p = vline!(p, [ hidden_θ ], label = &quot;Real (hidden) θ&quot;)</code></pre><img src="8de38d2c.svg" alt="Example block output"/><h3 id="Missing-data-points-and-predictions"><a class="docs-heading-anchor" href="#Missing-data-points-and-predictions">Missing data points and predictions</a><a id="Missing-data-points-and-predictions-1"></a><a class="docs-heading-anchor-permalink" href="#Missing-data-points-and-predictions" title="Permalink"></a></h3><pre><code class="language-julia hljs">result = infer(
+    model = beta_bernoulli(a = 1.0, b = 1.0),
+    data  = (y = [ true, false, missing, true, false ], )
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Inference results:
+  Posteriors       | available for (θ)
+  Predictions      | available for (y)
+</code></pre><p>In principle, the entire dataset may consist of <code>missing</code> entries:</p><pre><code class="language-julia hljs">result = infer(
+    model = beta_bernoulli(a = 1.0, b = 1.0),
+    data  = (y = [ missing, missing, missing, missing, missing ], )
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Inference results:
+  Posteriors       | available for (θ)
+  Predictions      | available for (y)
+</code></pre><p>In this case, the resulting posterior is simply equal to the prior (as expected, since no extra information can be extracted from the observations):</p><pre><code class="language-julia hljs">result.posteriors[:θ]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Beta{Float64}(α=1.0, β=1.0)</code></pre><p>In addition, in the presence of <code>missing</code> data points <code>RxInfer</code> will also attempt to compute predictive distributions:</p><pre><code class="language-julia hljs">result.predictions[:y]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">5-element Vector{Bernoulli{Float64}}:
+ Bernoulli{Float64}(p=0.5)
+ Bernoulli{Float64}(p=0.5)
+ Bernoulli{Float64}(p=0.5)
+ Bernoulli{Float64}(p=0.5)
+ Bernoulli{Float64}(p=0.5)</code></pre><pre><code class="language-julia hljs"># Sample y₃
+rand(result.predictions[:y][3])</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">true</code></pre><h2 id="manual-static-inference-variational-inference"><a class="docs-heading-anchor" href="#manual-static-inference-variational-inference">Variational Inference with static datasets</a><a id="manual-static-inference-variational-inference-1"></a><a class="docs-heading-anchor-permalink" href="#manual-static-inference-variational-inference" title="Permalink"></a></h2><p>The example above is quite simple and performs exact Bayesian inference. However, for more complex model, we may need to specify variational constraints and perform variational inference. To demonstrate this, we will use a slightly more complex model, where we need to estimate mean and the precision of IID samples drawn from the <a href="https://en.wikipedia.org/wiki/Normal_distribution">Normal distribution</a>:</p><pre><code class="language-julia hljs">@model function iid_estimation(y)
+    μ  ~ Normal(mean = 0.0, precision = 0.1)
+    τ  ~ Gamma(shape = 1.0, rate = 1.0)
+    y .~ Normal(mean = μ, precision = τ)
+end</code></pre><p>In this model, we have two latent variables <code>μ</code> and <code>τ</code> and a set of observations <code>y</code>. Note  that we used the broadcasting syntax, which is roughly equivalent to the manual for loop shown in the previous example. Let&#39;s try to run the inference in this model, but first, we need to create our observations:</p><pre><code class="language-julia hljs"># `ExponentialFamily` package expors different parametrizations
+# for the Normal distribution
+using ExponentialFamily
+
+hidden_μ       = 3.1415
+hidden_τ       = 2.7182
+distribution   = NormalMeanPrecision(hidden_μ, hidden_τ)
+rng            = StableRNG(42)
+n_observations = 1_000
+dataset        = rand(rng, distribution, n_observations)</code></pre><p>And finally we run the inference procedure:</p><pre><code class="language-julia hljs">results = infer(
+    model = iid_estimation(),
+    data  = (y = dataset, )
+)</code></pre><pre><code class="language-julia hljs">ERROR: Variables [ μ, τ ] have not been updated after an update event. 
+Therefore, make sure to initialize all required marginals and messages. See `initialization` keyword argument for the inference function. 
+See the official documentation for detailed information regarding the initialization.
+
+Stacktrace:
+ [1] error(s::String)
+   @ Base ./error.jl:35</code></pre><p>Huh? We get an error saying that the inference could not update the latent variables. This is happened because our model contain loops in its structure, therefore it requires the initialization. Read more about the initialization in the <a href="../initialization/#initialization">corresponding section</a> in the documentation.</p><p>We have two options here, either we initialize the messages and perform <a href="https://en.wikipedia.org/wiki/Belief_propagation">Loopy Belief Propagation</a> in this model or we break the loops with <a href="../../constraints-specification/#user-guide-constraints-specification">variational constraints</a> and perform variational inference. In this tutorial, we will choose the second option. For this we need to specify factorization constraints with the <code>@constraints</code> macro.</p><pre><code class="language-julia hljs"># Specify mean-field constraint over the joint variational posterior
+constraints = @constraints begin
+    q(μ, τ) = q(μ)q(τ)
+end
+# Specify initial posteriors for variational iterations
+initialization = @initialization begin
+    q(μ) = vague(NormalMeanPrecision)
+    q(τ) = vague(GammaShapeRate)
+end</code></pre><p>With this, we can use the <code>constraints</code> and <code>initialization</code> keyword arguments in the <a href="../overview/#RxInfer.infer"><code>infer</code></a> function. We also specify the number of variational iterations with the <code>iterations</code> keyword argument:</p><pre><code class="language-julia hljs">results = infer(
+    model          = iid_estimation(),
+    data           = (y = dataset, ),
+    constraints    = constraints,
+    iterations     = 100,
+    initialization = initialization
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Inference results:
+  Posteriors       | available for (μ, τ)
+</code></pre><p>Nice! Now, we have some result. Let&#39;s for example inspect the posterior results for <code>μ</code>.</p><pre><code class="language-julia hljs">results.posteriors[:μ]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">100-element Vector{NormalWeightedMeanPrecision{Float64}}:
+ NormalWeightedMeanPrecision{Float64}(xi=3.1276134803795e-9, w=0.10000000100200404)
+ NormalWeightedMeanPrecision{Float64}(xi=155.36497103500977, w=49.87459713359878)
+ NormalWeightedMeanPrecision{Float64}(xi=7667.879879783272, w=2456.6745376352883)
+ NormalWeightedMeanPrecision{Float64}(xi=8056.651469322076, w=2581.226095926443)
+ NormalWeightedMeanPrecision{Float64}(xi=8057.059156601909, w=2581.3567075436076)
+ NormalWeightedMeanPrecision{Float64}(xi=8057.059563495237, w=2581.3568379008652)
+ NormalWeightedMeanPrecision{Float64}(xi=8057.059563901298, w=2581.356838030949)
+ NormalWeightedMeanPrecision{Float64}(xi=8057.0595639017065, w=2581.356838031086)
+ NormalWeightedMeanPrecision{Float64}(xi=8057.059563901715, w=2581.356838031092)
+ NormalWeightedMeanPrecision{Float64}(xi=8057.059563901707, w=2581.356838031086)
+ ⋮
+ NormalWeightedMeanPrecision{Float64}(xi=8057.059563901707, w=2581.356838031086)
+ NormalWeightedMeanPrecision{Float64}(xi=8057.059563901715, w=2581.356838031092)
+ NormalWeightedMeanPrecision{Float64}(xi=8057.059563901707, w=2581.356838031086)
+ NormalWeightedMeanPrecision{Float64}(xi=8057.059563901715, w=2581.356838031092)
+ NormalWeightedMeanPrecision{Float64}(xi=8057.059563901707, w=2581.356838031086)
+ NormalWeightedMeanPrecision{Float64}(xi=8057.059563901715, w=2581.356838031092)
+ NormalWeightedMeanPrecision{Float64}(xi=8057.059563901707, w=2581.356838031086)
+ NormalWeightedMeanPrecision{Float64}(xi=8057.059563901715, w=2581.356838031092)
+ NormalWeightedMeanPrecision{Float64}(xi=8057.059563901707, w=2581.356838031086)</code></pre><p>In constrast to the previous example, now we have an array of posteriors for <code>μ</code>, not just a single value. Each posterior in the collection corresponds to the intermediate variational update for each variational iteration. Let&#39;s visualize how our posterior over <code>μ</code> has been changing during the variational optimization:</p><pre><code class="language-julia hljs">@gif for (i, intermediate_posterior) in enumerate(results.posteriors[:μ])
+    rμ = range(0, 5, length = 1000)
+    plot(rμ, (x) -&gt; pdf(intermediate_posterior, x), title=&quot;Posterior on iteration $(i)&quot;, fillalpha=0.3, fillrange = 0, label=&quot;P(μ|y)&quot;, c=3)
+    vline!([hidden_μ], label = &quot;Real (hidden) μ&quot;)
+end</code></pre><img src="0c168268.gif" alt="Example block output"/><p>It seems that the posterior has converged to a stable distribution pretty fast.  We are going to verify the converge in the <a href="#manual-static-inference-bfe">next section</a>. If, for example, we are not interested in intermediate updates, but just in the final posterior, we could use the <code>returnvars</code> option in the <a href="../overview/#RxInfer.infer"><code>infer</code></a> function and use the <a href="../overview/#RxInfer.KeepLast"><code>KeepLast</code></a> option for <code>μ</code>:</p><pre><code class="language-julia hljs">results_keep_last = infer(
+    model          = iid_estimation(),
+    data           = (y = dataset, ),
+    constraints    = constraints,
+    iterations     = 100,
+    returnvars     = (μ = KeepLast(), ),
+    initialization = initialization
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Inference results:
+  Posteriors       | available for (μ)
+</code></pre><p>We can also verify that the got exactly the same result:</p><pre><code class="language-julia hljs">results_keep_last.posteriors[:μ] == last(results.posteriors[:μ])</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">true</code></pre><p>Let&#39;s also verify that the posteriors are consistent with the real hidden values used in the dataset generation:</p><pre><code class="language-julia hljs">println(&quot;Real (hidden) μ was &quot;, hidden_μ)
+println(&quot;Inferred mean for μ is &quot;, mean(last(results.posteriors[:μ])), &quot; with standard deviation &quot;, std(last(results.posteriors[:μ])))
+
+println(&quot;Real (hidden) τ was &quot;, hidden_τ)
+println(&quot;Inferred mean for τ is &quot;, mean(last(results.posteriors[:τ])), &quot; with standard deviation &quot;, std(last(results.posteriors[:τ])))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Real (hidden) μ was 3.1415
+Inferred mean for μ is 3.121249819163777 with standard deviation 0.019682305930741596
+Real (hidden) τ was 2.7182
+Inferred mean for τ is 2.5812568380310656 with standard deviation 0.11532205069721162</code></pre><pre><code class="language-julia hljs">rμ = range(2, 4, length = 1000)
+pμ = plot(rμ, (x) -&gt; pdf(last(results.posteriors[:μ]), x), title=&quot;Posterior for μ&quot;, fillalpha=0.3, fillrange = 0, label=&quot;P(μ|y)&quot;, c=3)
+pμ = vline!(pμ, [ hidden_μ ], label = &quot;Real (hidden) μ&quot;)
+
+rτ = range(2, 4, length = 1000)
+pτ = plot(rτ, (x) -&gt; pdf(last(results.posteriors[:τ]), x), title=&quot;Posterior for τ&quot;, fillalpha=0.3, fillrange = 0, label=&quot;P(τ|y)&quot;, c=3)
+pτ = vline!(pτ, [ hidden_τ ], label = &quot;Real (hidden) τ&quot;)
+
+plot(pμ, pτ)</code></pre><img src="312d01af.svg" alt="Example block output"/><p>Nice result! Our posteriors are pretty close to the actual values of the parameters used for dataset generation.</p><h2 id="manual-static-inference-bfe"><a class="docs-heading-anchor" href="#manual-static-inference-bfe">Convergence and Bethe Free Energy</a><a id="manual-static-inference-bfe-1"></a><a class="docs-heading-anchor-permalink" href="#manual-static-inference-bfe" title="Permalink"></a></h2><p>Read also the <a href="../../../library/bethe-free-energy/#lib-bethe-free-energy">Bethe Free Energy</a> section.</p><p>In contrast to Loopy Belief Propagation, the variational inference is set to converge to a stable point during variational inference. In order to verify the convergence for this particular model, we can check the convergence of the <a href="../../../library/bethe-free-energy/#lib-bethe-free-energy">Bethe Free Enegrgy</a> values. By default, <a href="../overview/#RxInfer.infer"><code>infer</code></a> function does <strong>not</strong> compute the Bethe Free Energy values. In order to compute those, we must set the <code>free_energy</code> flag explicitly to <code>true</code>:</p><pre><code class="language-julia hljs">results = infer(
+    model          = iid_estimation(),
+    data           = (y = dataset, ),
+    constraints    = constraints,
+    iterations     = 100,
+    initialization = initialization,
+    free_energy    = true
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Inference results:
+  Posteriors       | available for (μ, τ)
+  Free Energy:     | Real[14763.3, 2437.5, 952.711, 952.108, 952.108, 952.108, 952.108, 952.108, 952.108, 952.108  …  952.108, 952.108, 952.108, 952.108, 952.108, 952.108, 952.108, 952.108, 952.108, 952.108]
+</code></pre><p>Now, we can access the <code>free_energy</code> field of the <code>results</code> and verify if the inference procedure has converged or not:</p><pre><code class="language-julia hljs">plot(results.free_energy, label = &quot;Bethe Free Energy&quot;)</code></pre><img src="8b4b6a16.svg" alt="Example block output"/><p>Well, it seems that <code>100</code> iterations was too much for this simple problem and we could do much less iterations in order to converge to a stable point. The animation above also suggested that the posterior for <code>μ</code> has converged pretty fast to a stable point.</p><pre><code class="language-julia hljs"># Let&#39;s try to use only 5 iterations
+results = infer(
+    model          = iid_estimation(),
+    data           = (y = dataset, ),
+    constraints    = constraints,
+    iterations     = 5,
+    initialization = initialization,
+    free_energy    = true
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Inference results:
+  Posteriors       | available for (μ, τ)
+  Free Energy:     | Real[14763.3, 2437.5, 952.711, 952.108, 952.108]
+</code></pre><pre><code class="language-julia hljs">plot(results.free_energy, label = &quot;Bethe Free Energy&quot;)</code></pre><img src="921f9e49.svg" alt="Example block output"/><h2 id="manual-static-inference-callbacks"><a class="docs-heading-anchor" href="#manual-static-inference-callbacks">Callbacks</a><a id="manual-static-inference-callbacks-1"></a><a class="docs-heading-anchor-permalink" href="#manual-static-inference-callbacks" title="Permalink"></a></h2><p>The <a href="../overview/#RxInfer.infer"><code>infer</code></a> function has its own lifecycle, consisting of multiple steps. A user is free to inject some extra logic during the inference procedure, e.g. for <a href="../../debugging/#user-guide-debugging-callbacks">debugging purposes</a>. By supplying callbacks, users can inject custom logic on specific moments during the inference procedure. Here are available callbacks that can be used together with the static datasets:</p><hr/><pre><code class="language-julia hljs">before_model_creation()</code></pre><p>Calls before the model is going to be created, does not accept any arguments.</p><pre><code class="language-julia hljs">after_model_creation(model::ProbabilisticModel)</code></pre><p>Calls right after the model has been created, accepts a single argument, the <code>model</code>.</p><pre><code class="language-julia hljs">before_inference(model::ProbabilisticModel)</code></pre><p>Calls before the inference procedure starts, accepts a single argument, the <code>model</code>.</p><pre><code class="language-julia hljs">after_inference(model::ProbabilisticModel)</code></pre><p>Calls after the inference procedure ends, accepts a single argument, the <code>model</code>.</p><pre><code class="language-julia hljs">before_iteration(model::ProbabilisticModel, iteration::Int)</code></pre><p>Calls before each iteration, accepts two arguments: the <code>model</code> and the current iteration number.</p><pre><code class="language-julia hljs">after_iteration(model::ProbabilisticModel, iteration::Int)</code></pre><p>Calls after each iteration, accepts two arguments: the <code>model</code> and the current iteration number.</p><pre><code class="language-julia hljs">before_data_update(model::ProbabilisticModel, data)</code></pre><p>Calls before each data update, accepts two arguments: the <code>model</code> and the updated data.</p><pre><code class="language-julia hljs">after_data_update(model::ProbabilisticModel, data)</code></pre><p>Calls after each data update, accepts two arguments: the <code>model</code> and the updated data.</p><pre><code class="language-julia hljs">on_marginal_update(model::ProbabilisticModel, name, update)</code></pre><p>Calls after each marginal update, accepts three arguments: the <code>model</code>, the name of the updated marginal, and the updated marginal itself.</p><hr/><p>Here is an example usage of the outlined callbacks:</p><pre><code class="language-julia hljs">function before_model_creation()
+    println(&quot;The model is about to be created&quot;)
+end
+
+function after_model_creation(model::ProbabilisticModel)
+    println(&quot;The model has been created&quot;)
+    println(&quot;  The number of factor nodes is: &quot;, length(RxInfer.getfactornodes(model)))
+    println(&quot;  The number of latent states is: &quot;, length(RxInfer.getrandomvars(model)))
+    println(&quot;  The number of data points is: &quot;, length(RxInfer.getdatavars(model)))
+    println(&quot;  The number of constants is: &quot;, length(RxInfer.getconstantvars(model)))
+end
+
+function before_inference(model::ProbabilisticModel)
+    println(&quot;The inference procedure is about to start&quot;)
+end
+
+function after_inference(model::ProbabilisticModel)
+    println(&quot;The inference procedure has ended&quot;)
+end
+
+function before_iteration(model::ProbabilisticModel, iteration::Int)
+    println(&quot;The iteration &quot;, iteration, &quot; is about to start&quot;)
+end
+
+function after_iteration(model::ProbabilisticModel, iteration::Int)
+    println(&quot;The iteration &quot;, iteration, &quot; has ended&quot;)
+end
+
+function before_data_update(model::ProbabilisticModel, data)
+    println(&quot;The data is about to be processed&quot;)
+end
+
+function after_data_update(model::ProbabilisticModel, data)
+    println(&quot;The data has been processed&quot;)
+end
+
+function on_marginal_update(model::ProbabilisticModel, name, update)
+    println(&quot;New marginal update for &quot;, name, &quot; &quot;, update)
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">on_marginal_update (generic function with 1 method)</code></pre><pre><code class="language-julia hljs">results = infer(
+    model          = iid_estimation(),
+    data           = (y = dataset, ),
+    constraints    = constraints,
+    iterations     = 5,
+    initialization = initialization,
+    free_energy    = true,
+    callbacks      = (
+        before_model_creation = before_model_creation,
+        after_model_creation = after_model_creation,
+        before_inference = before_inference,
+        after_inference = after_inference,
+        before_iteration = before_iteration,
+        after_iteration = after_iteration,
+        before_data_update = before_data_update,
+        after_data_update = after_data_update,
+        on_marginal_update = on_marginal_update
+    )
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">The model is about to be created
+The model has been created
+  The number of factor nodes is: 1002
+  The number of latent states is: 2
+  The number of data points is: 1000
+  The number of constants is: 4
+The inference procedure is about to start
+The iteration 1 is about to start
+The data is about to be processed
+New marginal update for τ Marginal(GammaShapeRate{Float64}(a=501.0, b=5.000000000050656e14))
+New marginal update for μ Marginal(NormalWeightedMeanPrecision{Float64}(xi=3.1276134803795e-9, w=0.10000000100200404))
+The data has been processed
+The iteration 1 has ended
+The iteration 2 is about to start
+The data is about to be processed
+New marginal update for τ Marginal(GammaShapeRate{Float64}(a=501.0, b=10065.375288830106))
+New marginal update for μ Marginal(NormalWeightedMeanPrecision{Float64}(xi=155.36497103500977, w=49.87459713359878))
+The data has been processed
+The iteration 2 has ended
+The iteration 3 is about to start
+The data is about to be processed
+New marginal update for τ Marginal(GammaShapeRate{Float64}(a=501.0, b=203.94251927819624))
+New marginal update for μ Marginal(NormalWeightedMeanPrecision{Float64}(xi=7667.879879783272, w=2456.6745376352883))
+The data has been processed
+The iteration 3 has ended
+The iteration 4 is about to start
+The data is about to be processed
+New marginal update for τ Marginal(GammaShapeRate{Float64}(a=501.0, b=194.10132685523482))
+New marginal update for μ Marginal(NormalWeightedMeanPrecision{Float64}(xi=8056.651469322076, w=2581.226095926443))
+The data has been processed
+The iteration 4 has ended
+The iteration 5 is about to start
+The data is about to be processed
+New marginal update for τ Marginal(GammaShapeRate{Float64}(a=501.0, b=194.09150532601225))
+New marginal update for μ Marginal(NormalWeightedMeanPrecision{Float64}(xi=8057.059156601909, w=2581.3567075436076))
+The data has been processed
+The iteration 5 has ended
+The inference procedure has ended</code></pre><h2 id="manual-static-inference-where-to-go"><a class="docs-heading-anchor" href="#manual-static-inference-where-to-go">Where to go next?</a><a id="manual-static-inference-where-to-go-1"></a><a class="docs-heading-anchor-permalink" href="#manual-static-inference-where-to-go" title="Permalink"></a></h2><p>This guide covered some fundamental usages of the <a href="../overview/#RxInfer.infer"><code>infer</code></a> function in the context of inference with static datasets,  but did not cover all the available keyword arguments of the function. Read more explanation about the other keyword arguments  in the <a href="../overview/#user-guide-inference-execution">Overview</a> section or check out the <a href="../streamlined/#manual-online-inference">Streaming Inference</a> section. Also check out more complex <a href="https://reactivebayes.github.io/RxInfer.jl/stable/examples/overview/">examples</a>.</p><script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+mermaid.initialize({
+    startOnLoad: true,
+    theme: "neutral"
+});
+</script></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../overview/">« Overview</a><a class="docs-footer-nextpage" href="../streamlined/">Streamline inference »</a><div class="flexbox-break"></div><p class="footer-message">Created in <a href="https://biaslab.github.io/">BIASlab</a>, maintained by <a href="https://github.com/ReactiveBayes">ReactiveBayes</a>, powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.0 on <span class="colophon-date" title="Friday 17 January 2025 21:02">Friday 17 January 2025</span>. Using Julia version 1.10.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
